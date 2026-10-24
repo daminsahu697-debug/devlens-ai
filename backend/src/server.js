@@ -26,19 +26,42 @@ app.use(helmet({
   crossOriginResourcePolicy: { policy: 'cross-origin' }
 }));
 
-// 2. CORS Policy
+// 2. Dynamic CORS Policy
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl, server-to-server) or frontend origin
-    if (!origin || origin === FRONTEND_ORIGIN || origin.startsWith('http://localhost:')) {
-      callback(null, true);
-    } else {
-      callback(new Error('Cross-Origin Request Blocked by DevLens CORS Policy'));
+    // 1. Allow requests with no origin (same-origin, curl, server-to-server)
+    if (!origin) return callback(null, true);
+
+    // 2. Allow local development
+    if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+      return callback(null, true);
     }
+
+    // 3. Allow Vercel deployments and previews (*.vercel.app)
+    if (origin.endsWith('.vercel.app') || origin.includes('.vercel.app')) {
+      return callback(null, true);
+    }
+
+    // 4. Allow Render deployments (*.onrender.com)
+    if (origin.endsWith('.onrender.com') || origin.includes('.onrender.com')) {
+      return callback(null, true);
+    }
+
+    // 5. Allow configured custom FRONTEND_ORIGIN
+    if (FRONTEND_ORIGIN && (origin === FRONTEND_ORIGIN || FRONTEND_ORIGIN === '*')) {
+      return callback(null, true);
+    }
+
+    // If none match, reject safely
+    return callback(new Error('Cross-Origin Request Blocked by DevLens CORS Policy'));
   },
+  credentials: true,
   methods: ['GET', 'POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-github-token', 'x-gemini-api-key', 'x-llm-api-key']
 }));
+
+// Preflight handler
+app.options('*', cors());
 
 // 3. Request Body Parsing with Strict Size Limit
 app.use(express.json({ limit: '1mb' }));
