@@ -3,10 +3,13 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Node.js Version](https://img.shields.io/badge/Node.js-%3E%3D20.0.0-green.svg)](https://nodejs.org)
 [![React Version](https://img.shields.io/badge/React-19-cyan.svg)](https://react.dev)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC.svg)](https://tailwindcss.com)
+[![Vercel Deployment](https://img.shields.io/badge/Deployed_on-Vercel-black?logo=vercel)](https://devlens-ai-rust.vercel.app)
 
 > **Understand Any Codebase. In Minutes.**  
 > Explore unfamiliar GitHub repositories, understand project architecture, inspect source files, and get source-grounded explanations with AI.
+>
+> 🌐 **Live Production App**: **[https://devlens-ai-rust.vercel.app](https://devlens-ai-rust.vercel.app)**  
+> 📦 **GitHub Repository**: **[https://github.com/daminsahu697-debug/devlens-ai](https://github.com/daminsahu697-debug/devlens-ai)**
 
 ---
 
