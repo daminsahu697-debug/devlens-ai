@@ -46,10 +46,13 @@ app.use(express.json({ limit: '1mb' }));
 // 4. General Rate Limiting
 app.use(generalLimiter);
 
-// 5. API Routes
+// 5. API Routes (Mounted with /api and direct prefix for Vercel Serverless compatibility)
 app.use('/api/repository', repositoryRoutes);
+app.use('/repository', repositoryRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/ai', aiRoutes);
 app.use('/api/config', configRoutes);
+app.use('/config', configRoutes);
 
 import path from 'node:path';
 import fs from 'node:fs';
