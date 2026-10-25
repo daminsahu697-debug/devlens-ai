@@ -78,21 +78,31 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }) {
       <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
+          const isFeatured = item.to === '/architecture' || item.to === '/audit';
           return (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all group ${
+                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
                   isActive
-                    ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/40 shadow-sm'
+                    ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/40 shadow-sm shadow-indigo-600/10'
                     : 'text-slate-400 hover:text-white hover:bg-surface-800/80 border border-transparent'
                 } ${isCollapsed ? 'justify-center px-0' : ''}`
               }
               title={isCollapsed ? item.label : undefined}
             >
               <Icon className="w-4 h-4 shrink-0" />
-              {!isCollapsed && <span className="truncate">{item.label}</span>}
+              {!isCollapsed && (
+                <div className="flex items-center justify-between flex-1 min-w-0">
+                  <span className="truncate">{item.label}</span>
+                  {isFeatured && (
+                    <span className="px-1.5 py-0.2 rounded-md bg-indigo-500/20 text-indigo-300 font-mono text-[9px] uppercase border border-indigo-500/30">
+                      NEW
+                    </span>
+                  )}
+                </div>
+              )}
             </NavLink>
           );
         })}

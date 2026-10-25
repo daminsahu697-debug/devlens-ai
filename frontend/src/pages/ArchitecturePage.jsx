@@ -1,8 +1,8 @@
 /**
  * DevLens AI - Feature 1: Interactive Architecture Map (X-Ray View)
- * Advanced visual topology map with React Flow, natural page scrolling without trapping,
- * 2D layered grid with generous clearance, interactive node connection highlighting,
- * full-screen mode, and a dedicated Architectural Layers & Connection Explainer.
+ * High-polish professional engineering dashboard with 2D visual topology,
+ * natural page scrolling without trapping, dynamic category counts,
+ * connection focus highlighting, and an executive Layered Architecture Flow.
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -50,7 +50,10 @@ import {
   Copy,
   Check,
   MousePointer,
-  Compass
+  Compass,
+  Sparkles,
+  Cpu,
+  Boxes
 } from 'lucide-react';
 import { useRepository } from '../context/RepositoryContext';
 import EmptyState from '../components/EmptyState';
@@ -58,56 +61,65 @@ import EmptyState from '../components/EmptyState';
 // Styling configuration for architecture categories
 const TYPE_CONFIG = {
   frontend: {
-    border: 'border-sky-500/60',
-    badge: 'bg-sky-500/20 text-sky-300 border-sky-500/30',
+    border: 'border-sky-500/50 hover:border-sky-400',
+    badge: 'bg-sky-500/15 text-sky-300 border-sky-500/30',
+    dot: 'bg-sky-400',
     icon: Code2,
     label: 'UI Component'
   },
   page: {
-    border: 'border-blue-500/60',
-    badge: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
+    border: 'border-blue-500/50 hover:border-blue-400',
+    badge: 'bg-blue-500/15 text-blue-300 border-blue-500/30',
+    dot: 'bg-blue-400',
     icon: Code2,
     label: 'App Entry'
   },
   route: {
-    border: 'border-indigo-500/60',
-    badge: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30',
+    border: 'border-indigo-500/50 hover:border-indigo-400',
+    badge: 'bg-indigo-500/15 text-indigo-300 border-indigo-500/30',
+    dot: 'bg-indigo-400',
     icon: Layers,
     label: 'API Route'
   },
   service: {
-    border: 'border-violet-500/60',
-    badge: 'bg-violet-500/20 text-violet-300 border-violet-500/30',
-    icon: Layers,
+    border: 'border-violet-500/50 hover:border-violet-400',
+    badge: 'bg-violet-500/15 text-violet-300 border-violet-500/30',
+    dot: 'bg-violet-400',
+    icon: Cpu,
     label: 'Service Logic'
   },
   database: {
-    border: 'border-emerald-500/60',
-    badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+    border: 'border-emerald-500/50 hover:border-emerald-400',
+    badge: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+    dot: 'bg-emerald-400',
     icon: Database,
     label: 'Database'
   },
   external: {
-    border: 'border-amber-500/60',
-    badge: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
+    border: 'border-amber-500/50 hover:border-amber-400',
+    badge: 'bg-amber-500/15 text-amber-300 border-amber-500/30',
+    dot: 'bg-amber-400',
     icon: Cloud,
     label: 'Cloud / API'
   },
   auth: {
-    border: 'border-rose-500/60',
-    badge: 'bg-rose-500/20 text-rose-300 border-rose-500/30',
+    border: 'border-rose-500/50 hover:border-rose-400',
+    badge: 'bg-rose-500/15 text-rose-300 border-rose-500/30',
+    dot: 'bg-rose-400',
     icon: ShieldCheck,
     label: 'Auth'
   },
   config: {
-    border: 'border-slate-500/60',
-    badge: 'bg-slate-500/20 text-slate-300 border-slate-500/30',
+    border: 'border-slate-500/50 hover:border-slate-400',
+    badge: 'bg-slate-500/15 text-slate-300 border-slate-500/30',
+    dot: 'bg-slate-400',
     icon: FileCode,
     label: 'Config'
   },
   test: {
-    border: 'border-teal-500/60',
-    badge: 'bg-teal-500/20 text-teal-300 border-teal-500/30',
+    border: 'border-teal-500/50 hover:border-teal-400',
+    badge: 'bg-teal-500/15 text-teal-300 border-teal-500/30',
+    dot: 'bg-teal-400',
     icon: CheckCircle2,
     label: 'Test'
   }
@@ -122,10 +134,10 @@ function ArchitectureNode({ data, selected }) {
 
   return (
     <div
-      className={`px-4 py-3 rounded-2xl bg-surface-900 border transition-all duration-200 shadow-xl min-w-[240px] max-w-[270px] cursor-pointer ${
+      className={`group relative px-4 py-3.5 rounded-2xl bg-surface-900/95 border backdrop-blur-md transition-all duration-200 shadow-xl min-w-[240px] max-w-[270px] cursor-pointer ${
         selected
-          ? 'border-indigo-400 ring-2 ring-indigo-500/60 scale-105 shadow-indigo-500/30'
-          : `${typeCfg.border} hover:border-indigo-400 hover:shadow-indigo-500/15`
+          ? 'border-indigo-400 ring-2 ring-indigo-500/60 scale-105 shadow-2xl shadow-indigo-500/25'
+          : `${typeCfg.border} hover:shadow-indigo-500/10`
       }`}
     >
       <Handle
@@ -134,36 +146,43 @@ function ArchitectureNode({ data, selected }) {
         className="!bg-indigo-500 !w-3 !h-3 !border-2 !border-surface-950 !-top-1.5"
       />
 
-      <div className="flex items-center justify-between gap-2 mb-1.5">
+      {/* Node Header Pill */}
+      <div className="flex items-center justify-between gap-2 mb-2">
         <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase border ${typeCfg.badge}`}>
           <IconComponent className="w-3 h-3" />
           <span>{typeCfg.label}</span>
         </span>
+
         {data.confidence && (
-          <span className={`text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${
+          <span className={`inline-flex items-center gap-1 text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded ${
             data.confidence === 'VERIFIED'
               ? 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/20'
               : 'text-indigo-300 bg-indigo-500/10 border border-indigo-500/20'
           }`}>
-            {data.confidence === 'VERIFIED' ? 'VERIFIED' : 'INFERRED'}
+            <span className={`w-1 h-1 rounded-full ${data.confidence === 'VERIFIED' ? 'bg-emerald-400' : 'bg-indigo-400'}`}></span>
+            <span>{data.confidence === 'VERIFIED' ? 'VERIFIED' : 'INFERRED'}</span>
           </span>
         )}
       </div>
 
+      {/* Component Title */}
       <div className="font-mono text-xs font-bold text-white truncate" title={data.label}>
         {data.label}
       </div>
 
+      {/* File Path */}
       <div className="text-[10px] text-slate-400 font-mono truncate mt-0.5" title={data.filePath}>
         {data.filePath}
       </div>
 
-      {data.metrics?.lines > 0 && (
-        <div className="flex items-center justify-between text-[10px] text-slate-500 mt-2.5 pt-1.5 border-t border-surface-800 font-mono">
-          <span>{data.metrics.lines} lines</span>
-          <span className="text-indigo-400 font-semibold hover:underline">Click to Inspect →</span>
-        </div>
-      )}
+      {/* Footer Metrics */}
+      <div className="flex items-center justify-between text-[10px] text-slate-500 mt-2.5 pt-2 border-t border-surface-800/80 font-mono">
+        <span>{data.metrics?.lines > 0 ? `${data.metrics.lines} lines` : 'External'}</span>
+        <span className="text-indigo-400 font-semibold group-hover:underline flex items-center gap-0.5">
+          <span>Inspect</span>
+          <ArrowRight className="w-2.5 h-2.5" />
+        </span>
+      </div>
 
       <Handle
         type="source"
@@ -188,8 +207,8 @@ function CanvasToolbar({ onToggleMiniMap, showMiniMap, onToggleFullscreen, isFul
     <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 p-1.5 rounded-xl bg-surface-900/95 border border-surface-700/80 shadow-2xl backdrop-blur-md">
       <button
         onClick={() => fitView({ padding: 0.45, duration: 400 })}
-        className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md transition-all"
-        title="Fit all components on screen with generous padding"
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md transition-all active:scale-95"
+        title="Fit all components on screen"
       >
         <Maximize className="w-3.5 h-3.5" />
         <span>Fit to Screen</span>
@@ -252,7 +271,7 @@ function ArchitecturePageInner() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('ALL');
   const [selectedNode, setSelectedNode] = useState(null);
-  const [showMiniMap, setShowMiniMap] = useState(false); // Default off to prevent covering nodes
+  const [showMiniMap, setShowMiniMap] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [copiedFile, setCopiedFile] = useState(false);
 
@@ -412,6 +431,21 @@ function ArchitecturePageInner() {
     return ids;
   }, [selectedNode, edges]);
 
+  // Dynamic counts for category filter pills
+  const categoryCounts = useMemo(() => {
+    if (!architectureData?.nodes) {
+      return { ALL: 0, FRONTEND: 0, BACKEND: 0, DATABASE: 0, EXTERNAL: 0 };
+    }
+    const list = architectureData.nodes;
+    return {
+      ALL: list.length,
+      FRONTEND: list.filter(n => n.type === 'frontend' || n.type === 'page').length,
+      BACKEND: list.filter(n => n.type === 'route' || n.type === 'service' || n.type === 'auth').length,
+      DATABASE: list.filter(n => n.type === 'database').length,
+      EXTERNAL: list.filter(n => n.type === 'external' || n.type === 'config' || n.type === 'test').length
+    };
+  }, [architectureData]);
+
   // Filter & Focus Highlighted Nodes
   const displayNodes = useMemo(() => {
     return nodes.map(n => {
@@ -423,7 +457,7 @@ function ArchitecturePageInner() {
         (selectedFilter === 'FRONTEND' && (n.data.type === 'frontend' || n.data.type === 'page')) ||
         (selectedFilter === 'BACKEND' && (n.data.type === 'route' || n.data.type === 'service' || n.data.type === 'auth')) ||
         (selectedFilter === 'DATABASE' && n.data.type === 'database') ||
-        (selectedFilter === 'EXTERNAL' && n.data.type === 'external');
+        (selectedFilter === 'EXTERNAL' && (n.data.type === 'external' || n.data.type === 'config' || n.data.type === 'test'));
 
       const isVisible = matchesSearch && matchesFilter;
       const isConnected = !connectedNodeIds || connectedNodeIds.has(n.id);
@@ -485,34 +519,35 @@ function ArchitecturePageInner() {
   const totalEdgesCount = architectureData?.edges?.length || 0;
 
   return (
-    <div className="space-y-6">
-      {/* Top Header & Overview Stats */}
-      <div className="p-5 rounded-2xl bg-surface-900/80 border border-surface-700/80 backdrop-blur-md space-y-4">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* 1. Executive Architecture Header & View Mode Switcher */}
+      <div className="p-6 rounded-2xl bg-surface-900/90 border border-surface-700/80 backdrop-blur-md shadow-xl space-y-5">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-surface-800">
           <div>
-            <div className="flex items-center gap-2 text-indigo-400 font-semibold text-xs tracking-wider uppercase">
+            <div className="flex items-center gap-2 text-indigo-400 font-semibold text-xs tracking-wider uppercase mb-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               <Layers className="w-4 h-4" />
               <span>Interactive Architecture Map</span>
               <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono text-[10px]">
                 X-Ray View
               </span>
             </div>
-            <h1 className="text-xl font-bold text-white mt-1">
-              {currentRepo.fullName} Component Topology
+            <h1 className="text-xl md:text-2xl font-bold text-white tracking-tight">
+              {currentRepo.fullName} Topology & Data Flow
             </h1>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Verified static imports, full-stack data flows, and external services with confidence metrics.
+            <p className="text-xs md:text-sm text-slate-400 mt-1 max-w-2xl leading-relaxed">
+              Explore component relationships verified from direct imports, API endpoints, and cloud service declarations.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
-            {/* View Mode Toggle: Interactive Canvas vs Layered Breakdown */}
-            <div className="flex items-center p-1 rounded-xl bg-surface-950 border border-surface-700/80 text-xs">
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Prominent View Mode Switcher */}
+            <div className="flex items-center p-1 rounded-xl bg-surface-950 border border-surface-750 text-xs shadow-inner">
               <button
                 onClick={() => setActiveTab('canvas')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-semibold transition-all ${
                   activeTab === 'canvas'
-                    ? 'bg-indigo-600 text-white shadow-sm'
+                    ? 'bg-indigo-600 text-white shadow-md'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -521,89 +556,104 @@ function ArchitecturePageInner() {
               </button>
               <button
                 onClick={() => setActiveTab('layers')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                className={`flex items-center gap-2 px-3.5 py-2 rounded-lg font-semibold transition-all ${
                   activeTab === 'layers'
-                    ? 'bg-indigo-600 text-white shadow-sm'
+                    ? 'bg-indigo-600 text-white shadow-md'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
                 <Split className="w-3.5 h-3.5" />
-                <span>Layered Flow Explainer</span>
+                <span>Layered Breakdown</span>
               </button>
             </div>
 
-            {/* Refresh Button */}
+            {/* Refresh / Re-scan button */}
             <button
               onClick={() => requestArchitecture(true)}
               disabled={isArchitectureLoading}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface-800 hover:bg-surface-700 text-slate-300 text-xs font-medium border border-surface-700 transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface-850 hover:bg-surface-800 text-slate-300 text-xs font-medium border border-surface-700 transition-colors disabled:opacity-50"
               title="Re-run architecture scan"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isArchitectureLoading ? 'animate-spin text-indigo-400' : ''}`} />
-              <span>Refresh</span>
+              <span className="hidden sm:inline">Re-scan</span>
             </button>
           </div>
         </div>
 
-        {/* Quick Architecture Stat Badges */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-surface-800/80 text-xs">
-          <div className="p-2.5 rounded-xl bg-surface-950/70 border border-surface-800 flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/20">
-              <Code2 className="w-4 h-4" />
+        {/* 2. Executive Architecture KPI Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+          <div className="p-3.5 rounded-xl bg-surface-950/70 border border-surface-800 flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20 shrink-0">
+              <Boxes className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 block font-semibold uppercase">Components</span>
-              <span className="font-mono text-sm font-bold text-white">{totalNodesCount} Modules</span>
+              <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">Components</span>
+              <span className="font-mono text-base font-bold text-white">{totalNodesCount} Modules</span>
+              <span className="text-[10px] text-slate-500 block truncate">Discovered in tree</span>
             </div>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-surface-950/70 border border-surface-800 flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <CheckCircle2 className="w-4 h-4" />
+          <div className="p-3.5 rounded-xl bg-surface-950/70 border border-surface-800 flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
+              <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 block font-semibold uppercase">Verified Connections</span>
-              <span className="font-mono text-sm font-bold text-emerald-400">{verifiedCount} Direct Imports</span>
+              <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">Verified Links</span>
+              <span className="font-mono text-base font-bold text-emerald-400">{verifiedCount} Direct Imports</span>
+              <span className="text-[10px] text-emerald-400/80 block truncate">100% Static Proof</span>
             </div>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-surface-950/70 border border-surface-800 flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              <Compass className="w-4 h-4" />
+          <div className="p-3.5 rounded-xl bg-surface-950/70 border border-surface-800 flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shrink-0">
+              <Compass className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 block font-semibold uppercase">Inferred Flows</span>
-              <span className="font-mono text-sm font-bold text-indigo-300">{inferredCount} Logical Flows</span>
+              <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">Inferred Flows</span>
+              <span className="font-mono text-base font-bold text-indigo-300">{inferredCount} Logical Flows</span>
+              <span className="text-[10px] text-indigo-400/80 block truncate">AI architecture pattern</span>
             </div>
           </div>
 
-          <div className="p-2.5 rounded-xl bg-surface-950/70 border border-surface-800 flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
-              <Cloud className="w-4 h-4" />
+          <div className="p-3.5 rounded-xl bg-surface-950/70 border border-surface-800 flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 shrink-0">
+              <Cloud className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[10px] text-slate-400 block font-semibold uppercase">Total Relationships</span>
-              <span className="font-mono text-sm font-bold text-amber-400">{totalEdgesCount} Links</span>
+              <span className="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">Total Connections</span>
+              <span className="font-mono text-base font-bold text-amber-400">{totalEdgesCount} Relationships</span>
+              <span className="text-[10px] text-slate-500 block truncate">Across entire stack</span>
             </div>
           </div>
         </div>
 
-        {/* Filter & Search Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 text-xs">
-          {/* Category Filter Pills */}
+        {/* 3. Filter Bar & Search */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 text-xs border-t border-surface-800/60">
+          {/* Category Filter Pills with Item Counts */}
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-slate-500 font-semibold text-[11px] mr-1">Filter:</span>
-            {['ALL', 'FRONTEND', 'BACKEND', 'DATABASE', 'EXTERNAL'].map((f) => (
+            <span className="text-slate-500 font-semibold text-[11px] mr-1">Layer:</span>
+            {[
+              { id: 'ALL', label: 'All', count: categoryCounts.ALL },
+              { id: 'FRONTEND', label: 'UI & Pages', count: categoryCounts.FRONTEND },
+              { id: 'BACKEND', label: 'Logic & Services', count: categoryCounts.BACKEND },
+              { id: 'DATABASE', label: 'Database', count: categoryCounts.DATABASE },
+              { id: 'EXTERNAL', label: 'External & Config', count: categoryCounts.EXTERNAL },
+            ].map((f) => (
               <button
-                key={f}
-                onClick={() => setSelectedFilter(f)}
-                className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
-                  selectedFilter === f
+                key={f.id}
+                onClick={() => setSelectedFilter(f.id)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-medium transition-all ${
+                  selectedFilter === f.id
                     ? 'bg-indigo-600 text-white shadow-sm'
                     : 'bg-surface-950 border border-surface-800 text-slate-400 hover:text-white'
                 }`}
               >
-                {f}
+                <span>{f.label}</span>
+                <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-mono ${
+                  selectedFilter === f.id ? 'bg-indigo-700 text-white' : 'bg-surface-850 text-slate-400'
+                }`}>
+                  {f.count}
+                </span>
               </button>
             ))}
           </div>
@@ -615,19 +665,28 @@ function ArchitecturePageInner() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Filter components or files..."
-              className="pl-8 pr-3 py-1.5 rounded-xl bg-surface-950 border border-surface-700/80 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-full sm:w-60"
+              placeholder="Filter components by name or path..."
+              className="pl-8 pr-8 py-1.5 rounded-xl bg-surface-950 border border-surface-750 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 w-full sm:w-64"
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+                title="Clear search"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Helpful User Interaction Banner */}
-      <div className="flex items-center justify-between px-4 py-2 rounded-xl bg-indigo-950/30 border border-indigo-500/20 text-xs text-indigo-300">
-        <div className="flex items-center gap-2">
-          <MousePointer className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+      {/* Helpful Navigation Tip Banner */}
+      <div className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-indigo-950/25 border border-indigo-500/20 text-xs text-indigo-300">
+        <div className="flex items-center gap-2.5">
+          <MousePointer className="w-4 h-4 text-indigo-400 shrink-0" />
           <span>
-            <strong>Navigation tip:</strong> Click & drag canvas to pan • Mouse wheel scrolls page naturally • Click any component to inspect & highlight its connections.
+            <strong>Interactive Map Tips:</strong> Click any component to highlight its dependencies • Mouse wheel scrolls page naturally • Drag background to pan.
           </span>
         </div>
         <button
@@ -667,7 +726,7 @@ function ArchitecturePageInner() {
             </div>
           ) : null}
 
-          {/* Floating Canvas Controls */}
+          {/* Floating Canvas Controls Toolbar */}
           <CanvasToolbar
             onToggleMiniMap={() => setShowMiniMap(prev => !prev)}
             showMiniMap={showMiniMap}
@@ -686,8 +745,8 @@ function ArchitecturePageInner() {
             onPaneClick={onPaneClick}
             fitView
             fitViewOptions={{ padding: 0.45, maxZoom: 1, minZoom: 0.5 }}
-            panOnScroll={false} // Mouse wheel scrolls the page smoothly! No trapping!
-            zoomOnScroll={false} // Prevents erratic scroll wheel zooming!
+            panOnScroll={false} // Mouse wheel scrolls the page smoothly without cursor trapping!
+            zoomOnScroll={false} // Prevents accidental scroll wheel zooming!
             zoomOnPinch={true}
             preventScrolling={false} // Page scrolls naturally when cursor is over canvas
             attributionPosition="bottom-left"
@@ -710,14 +769,14 @@ function ArchitecturePageInner() {
             )}
           </ReactFlow>
 
-          {/* Compact Legend Bar (Non-intrusive) */}
+          {/* Compact Legend Bar (Bottom Left) */}
           <div className="absolute bottom-4 left-4 flex flex-wrap items-center gap-3 p-2.5 rounded-xl bg-surface-900/95 border border-surface-700/80 backdrop-blur-md shadow-lg text-xs pointer-events-auto">
             <span className="font-semibold text-slate-400 uppercase tracking-wider text-[10px]">
               Legend:
             </span>
             <div className="flex items-center gap-1.5">
               <span className="w-5 h-0.5 bg-indigo-500 inline-block"></span>
-              <span className="text-slate-200 font-mono text-[11px]">VERIFIED (Direct Import / Exact Match)</span>
+              <span className="text-slate-200 font-mono text-[11px]">VERIFIED (Direct Import)</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-5 h-0.5 border-t border-dashed border-indigo-400 inline-block"></span>
@@ -743,7 +802,8 @@ function ArchitecturePageInner() {
                 </div>
                 <button
                   onClick={() => setSelectedNode(null)}
-                  className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-surface-800"
+                  className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-surface-800 transition-colors"
+                  title="Close inspector"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -761,7 +821,7 @@ function ArchitecturePageInner() {
                       <span>{copiedFile ? 'Copied' : 'Copy'}</span>
                     </button>
                   </div>
-                  <span className="font-mono text-indigo-300 break-all select-all block bg-surface-950 p-2 rounded-lg border border-surface-800">
+                  <span className="font-mono text-indigo-300 break-all select-all block bg-surface-950 p-2.5 rounded-lg border border-surface-800">
                     {selectedNode.filePath}
                   </span>
                 </div>
@@ -784,8 +844,8 @@ function ArchitecturePageInner() {
                 )}
 
                 <div>
-                  <span className="text-slate-500 block text-[10px] uppercase font-semibold">Role & Description</span>
-                  <p className="text-slate-300 mt-0.5 leading-relaxed bg-surface-950/60 p-2.5 rounded-lg border border-surface-800">
+                  <span className="text-slate-500 block text-[10px] uppercase font-semibold">Role & Purpose</span>
+                  <p className="text-slate-300 mt-1 leading-relaxed bg-surface-950/60 p-2.5 rounded-lg border border-surface-800">
                     {selectedNode.description}
                   </p>
                 </div>
@@ -806,12 +866,12 @@ function ArchitecturePageInner() {
                         return (
                           <div
                             key={e.id}
-                            className="p-1.5 rounded-lg bg-surface-950 border border-surface-800/80 text-[11px] flex items-center justify-between"
+                            className="p-2 rounded-lg bg-surface-950 border border-surface-800/80 text-[11px] flex items-center justify-between"
                           >
                             <span className="font-mono text-slate-300 truncate max-w-[170px]" title={otherNode?.data?.label || otherNodeId}>
                               {isOutbound ? `→ ${otherNode?.data?.label || otherNodeId}` : `← ${otherNode?.data?.label || otherNodeId}`}
                             </span>
-                            <span className="font-mono text-[9px] text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded">
+                            <span className="font-mono text-[9px] text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20">
                               {e.label}
                             </span>
                           </div>
@@ -834,7 +894,7 @@ function ArchitecturePageInner() {
           )}
         </div>
       ) : (
-        /* VIEW 2: Layered Architecture Flow Explainer (100% Readable & Scrollable) */
+        /* VIEW 2: Layered Architecture Flow Explainer (100% Readable & Simple) */
         <div className="space-y-6">
           {/* Architectural Overview Explainer */}
           <div className="p-5 rounded-2xl bg-indigo-950/20 border border-indigo-500/30 text-xs text-indigo-200 flex items-start gap-3">
