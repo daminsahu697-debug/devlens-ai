@@ -79,3 +79,44 @@ body {
 .animate-shimmer {
   animation: shimmer 1.8s infinite ease-in-out;
 }
+
+/* React Flow Dark Theme Overrides */
+.react-flow__node {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  color: inherit !important;
+  box-shadow: none !important;
+}
+
+.react-flow__handle {
+  width: 8px !important;
+  height: 8px !important;
+  background: #6366f1 !important;
+  border: 2px solid #0f172a !important;
+}
+
+.react-flow__controls {
+  background: #0f172a !important;
+  border: 1px solid #334155 !important;
+  border-radius: 0.75rem !important;
+  overflow: hidden;
+}
+
+.react-flow__controls-button {
+  background: #0f172a !important;
+  border-bottom: 1px solid #334155 !important;
+  fill: #94a3b8 !important;
+}
+
+.react-flow__controls-button:hover {
+  background: #1e293b !important;
+  fill: #fff !important;
+}
+
+.react-flow__minimap {
+  background: #070b12 !important;
+  border: 1px solid #1e293b !important;
+  border-radius: 0.75rem !important;
+}
+
