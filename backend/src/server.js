@@ -12,6 +12,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import repositoryRoutes from './routes/repositoryRoutes.js';
+import architectureRoutes from './routes/architectureRoutes.js';
+import auditRoutes from './routes/auditRoutes.js';
+import onboardingRoutes from './routes/onboardingRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
 import configRoutes from './routes/configRoutes.js';
 import { generalLimiter } from './middleware/rateLimiter.js';
@@ -70,6 +73,12 @@ app.use(express.json({ limit: '1mb' }));
 app.use(generalLimiter);
 
 // 5. API Routes (Mounted with /api and direct prefix for Vercel Serverless compatibility)
+app.use('/api/repository/architecture', architectureRoutes);
+app.use('/repository/architecture', architectureRoutes);
+app.use('/api/repository/audit', auditRoutes);
+app.use('/repository/audit', auditRoutes);
+app.use('/api/repository', onboardingRoutes);
+app.use('/repository', onboardingRoutes);
 app.use('/api/repository', repositoryRoutes);
 app.use('/repository', repositoryRoutes);
 app.use('/api/ai', aiRoutes);
@@ -87,14 +96,31 @@ const distPath = fs.existsSync(frontendDistPath)
   ? frontendDistPath
   : (fs.existsSync(localDistPath) ? localDistPath : null);
 
-if (distPath) {
-  app.use(express.static(distPath));
+// In test mode or when dist is absent, serve JSON status on root
+if (distPath && process.env.NODE_ENV !== 'test') {
+  app.use(express.static(distPath, { index: false }));
+  app.get('/', (req, res) => {
+    if (req.headers.accept?.includes('application/json') || req.headers['content-type']?.includes('application/json')) {
+      return res.json({
+        success: true,
+        data: {
+          name: 'DevLens AI API',
+          version: '1.0.0',
+          status: 'operational',
+          documentation: 'See README.md'
+        }
+      });
+    }
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
   app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) return next();
+    if (req.path.startsWith('/api') || req.path.startsWith('/repository') || req.path.startsWith('/ai') || req.path.startsWith('/config')) {
+      return next();
+    }
     res.sendFile(path.join(distPath, 'index.html'));
   });
 } else {
-  // Fallback API ping when running API-only mode
+  // Root API ping when running API-only mode or test suite
   app.get('/', (req, res) => {
     res.json({
       success: true,

@@ -6,11 +6,13 @@ import {
   MessageSquareCode,
   ArrowRight,
   RefreshCw,
-  Layers
+  Layers,
+  Stethoscope
 } from 'lucide-react';
 import { useRepository } from '../context/RepositoryContext';
 import RepositoryInput from '../components/RepositoryInput';
 import RepositoryOverview from '../components/RepositoryOverview';
+import InstantOnboardingPanel from '../components/InstantOnboardingPanel';
 import EmptyState from '../components/EmptyState';
 import ErrorMessage from '../components/ErrorMessage';
 import { CardSkeleton } from '../components/LoadingSkeleton';
@@ -88,63 +90,108 @@ export default function Dashboard() {
         <EmptyState onSelectSample={(url) => analyze(url)} />
       )}
 
-      {/* Analyzed Repository Overview & Quick Jump Cards */}
+      {/* Analyzed Repository Overview & Instant Onboarding */}
       {currentRepo && !isAnalyzing && (
         <div className="space-y-8">
+          {/* Metadata & Language Breakdown */}
           <RepositoryOverview
             metadata={currentRepo}
             stats={repoStats}
             languageBreakdown={languageBreakdown}
           />
 
-          {/* Quick Jump Action Cards */}
+          {/* Feature 3: Instant Onboarding & Setup Guide Panel */}
+          <InstantOnboardingPanel />
+
+          {/* Quick Jump Action Cards for Features */}
           <div>
             <div className="flex items-center gap-2 mb-3">
               <Layers className="w-4 h-4 text-indigo-400" />
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                Next Steps for {currentRepo.name}
+                Explore Advanced Intelligence for {currentRepo.name}
               </h3>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Feature 1: Architecture X-Ray */}
               <button
-                onClick={() => navigate('/analyzer')}
-                className="group p-5 rounded-2xl bg-surface-850 hover:bg-surface-800 border border-surface-700/80 hover:border-indigo-500/50 text-left transition-all duration-200 shadow-lg flex items-center justify-between"
+                onClick={() => navigate('/architecture')}
+                className="group p-5 rounded-2xl bg-surface-850 hover:bg-surface-800 border border-surface-700/80 hover:border-indigo-500/50 text-left transition-all duration-200 shadow-lg flex flex-col justify-between"
               >
-                <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 group-hover:scale-105 transition-transform">
-                    <Code2 className="w-6 h-6" />
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 group-hover:scale-105 transition-transform">
+                      <Layers className="w-5 h-5" />
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono text-[10px]">
+                      X-Ray View
+                    </span>
                   </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-white group-hover:text-indigo-300 transition-colors">
-                      Explore Source Files & Summary
-                    </h4>
-                    <p className="text-xs text-slate-400 mt-1 max-w-md">
-                      Browse filtered file tree, inspect source code with line numbers, and view the AI architecture summary.
-                    </p>
-                  </div>
+                  <h4 className="text-sm font-bold text-white group-hover:text-indigo-300 transition-colors">
+                    Architecture Map
+                  </h4>
+                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                    Interactive topology map with verified imports, API routes, and ORM connections.
+                  </p>
                 </div>
-                <ArrowRight className="w-5 h-5 text-slate-500 group-hover:text-indigo-400 group-hover:translate-x-1 transition-all shrink-0 ml-4" />
+                <div className="mt-4 pt-3 border-t border-surface-800 flex items-center justify-between text-xs font-medium text-indigo-400">
+                  <span>Open Topology</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
               </button>
 
+              {/* Feature 2: Doctor Checkup */}
               <button
-                onClick={() => navigate('/ask')}
-                className="group p-5 rounded-2xl bg-surface-850 hover:bg-surface-800 border border-surface-700/80 hover:border-violet-500/50 text-left transition-all duration-200 shadow-lg flex items-center justify-between"
+                onClick={() => navigate('/audit')}
+                className="group p-5 rounded-2xl bg-surface-850 hover:bg-surface-800 border border-surface-700/80 hover:border-emerald-500/50 text-left transition-all duration-200 shadow-lg flex flex-col justify-between"
               >
-                <div className="flex items-start gap-4">
-                  <div className="p-3 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400 group-hover:scale-105 transition-transform">
-                    <MessageSquareCode className="w-6 h-6" />
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 group-hover:scale-105 transition-transform">
+                      <Stethoscope className="w-5 h-5" />
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px]">
+                      Doctor Checkup
+                    </span>
                   </div>
-                  <div>
-                    <h4 className="text-sm font-bold text-white group-hover:text-violet-300 transition-colors">
-                      Ask Questions About Codebase
-                    </h4>
-                    <p className="text-xs text-slate-400 mt-1 max-w-md">
-                      Query the codebase for entry points, data flows, and dependencies with source-grounded references.
-                    </p>
-                  </div>
+                  <h4 className="text-sm font-bold text-white group-hover:text-emerald-300 transition-colors">
+                    Bug & Security Audit
+                  </h4>
+                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                    Deterministic OWASP rule scanning + AI review with reviewable code diff patches.
+                  </p>
                 </div>
-                <ArrowRight className="w-5 h-5 text-slate-500 group-hover:text-violet-400 group-hover:translate-x-1 transition-all shrink-0 ml-4" />
+                <div className="mt-4 pt-3 border-t border-surface-800 flex items-center justify-between text-xs font-medium text-emerald-400">
+                  <span>Run Audit</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </button>
+
+              {/* File Viewer & Analyzer */}
+              <button
+                onClick={() => navigate('/analyzer')}
+                className="group p-5 rounded-2xl bg-surface-850 hover:bg-surface-800 border border-surface-700/80 hover:border-blue-500/50 text-left transition-all duration-200 shadow-lg flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 group-hover:scale-105 transition-transform">
+                      <Code2 className="w-5 h-5" />
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 font-mono text-[10px]">
+                      Code Viewer
+                    </span>
+                  </div>
+                  <h4 className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors">
+                    Repository Analyzer
+                  </h4>
+                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                    Browse source trees, inspect syntax with line numbers, and view architecture notes.
+                  </p>
+                </div>
+                <div className="mt-4 pt-3 border-t border-surface-800 flex items-center justify-between text-xs font-medium text-blue-400">
+                  <span>Browse Source</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
               </button>
             </div>
           </div>

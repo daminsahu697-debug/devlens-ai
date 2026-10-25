@@ -1,7 +1,8 @@
 /**
  * DevLens AI - Global Repository Context
  * Manages repository state, active files, AI summaries, Q&A chat history,
- * analysis history, and secure in-session API keys.
+ * Architecture X-Ray state, Doctor Checkup audit state, Instant Onboarding,
+ * Codebase assistant sidebar, analysis history, and secure in-session API keys.
  */
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
@@ -10,6 +11,11 @@ import {
   fetchFileContent,
   generateSummary,
   askQuestion,
+  fetchArchitecture,
+  fetchAudit,
+  generateAuditFix,
+  fetchOnboardingSummary,
+  sendCodebaseChat,
   getSystemStatus
 } from '../services/api.js';
 
@@ -17,10 +23,12 @@ const RepositoryContext = createContext(null);
 
 const STORAGE_KEY_HISTORY = 'devlens_analysis_history';
 const SESSION_KEY_SECRETS = 'devlens_session_secrets';
+const STORAGE_KEY_DISMISSED = 'devlens_dismissed_findings';
 
 export function RepositoryProvider({ children }) {
   // Current active repository
   const [currentRepo, setCurrentRepo] = useState(null);
+  const [currentRepoUrl, setCurrentRepoUrl] = useState('');
   const [fileTree, setFileTree] = useState([]);
   const [allFilesList, setAllFilesList] = useState([]);
   const [repoStats, setRepoStats] = useState(null);
@@ -37,7 +45,31 @@ export function RepositoryProvider({ children }) {
   const [isSummaryLoading, setIsSummaryLoading] = useState(false);
   const [summaryError, setSummaryError] = useState(null);
 
-  // Q&A Chat State
+  // Feature 1: Architecture X-Ray State
+  const [architectureData, setArchitectureData] = useState(null);
+  const [isArchitectureLoading, setIsArchitectureLoading] = useState(false);
+  const [architectureError, setArchitectureError] = useState(null);
+
+  // Feature 2: Doctor Checkup Audit State
+  const [auditData, setAuditData] = useState(null);
+  const [isAuditLoading, setIsAuditLoading] = useState(false);
+  const [auditError, setAuditError] = useState(null);
+  const [dismissedFindings, setDismissedFindings] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_DISMISSED);
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  // Feature 3: Instant Onboarding Summary State
+  const [onboardingData, setOnboardingData] = useState(null);
+  const [isOnboardingLoading, setIsOnboardingLoading] = useState(false);
+  const [onboardingError, setOnboardingError] = useState(null);
+
+  // Sidebar Codebase Grounded Chat State
+  const [isChatDrawerOpen, setIsChatDrawerOpen] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
   const [isAsking, setIsAsking] = useState(false);
   const [chatError, setChatError] = useState(null);
@@ -94,15 +126,22 @@ export function RepositoryProvider({ children }) {
     refreshStatus();
   }, [sessionKeys.geminiApiKey, sessionKeys.githubToken]);
 
-  // Analyze repository action
+  // Main Analyze repository action
   const analyze = async (url) => {
     setIsAnalyzing(true);
     setAnalysisError(null);
     setSelectedFile(null);
     setSummaryData(null);
+    setArchitectureData(null);
+    setAuditData(null);
+    setOnboardingData(null);
     setChatMessages([]);
     setSummaryError(null);
+    setArchitectureError(null);
+    setAuditError(null);
+    setOnboardingError(null);
     setChatError(null);
+    setCurrentRepoUrl(url);
 
     try {
       const result = await analyzeRepository(url, sessionKeys);
@@ -178,7 +217,90 @@ export function RepositoryProvider({ children }) {
     }
   };
 
-  // Request AI Summary
+  // Request Feature 1: Architecture X-Ray Map
+  const requestArchitecture = async (forceRefresh = false) => {
+    if (!currentRepo) return;
+    if (architectureData && !forceRefresh) return architectureData;
+
+    setIsArchitectureLoading(true);
+    setArchitectureError(null);
+
+    try {
+      const repoUrl = currentRepoUrl || currentRepo.htmlUrl;
+      const data = await fetchArchitecture(repoUrl, sessionKeys);
+      setArchitectureData(data);
+      return data;
+    } catch (err) {
+      setArchitectureError(err.message || 'Failed to generate architecture map.');
+      throw err;
+    } finally {
+      setIsArchitectureLoading(false);
+    }
+  };
+
+  // Request Feature 2: Doctor Checkup Audit
+  const requestAudit = async (forceRefresh = false) => {
+    if (!currentRepo) return;
+    if (auditData && !forceRefresh) return auditData;
+
+    setIsAuditLoading(true);
+    setAuditError(null);
+
+    try {
+      const repoUrl = currentRepoUrl || currentRepo.htmlUrl;
+      const data = await fetchAudit(repoUrl, sessionKeys);
+      setAuditData(data);
+      return data;
+    } catch (err) {
+      setAuditError(err.message || 'Failed to run security and bug audit.');
+      throw err;
+    } finally {
+      setIsAuditLoading(false);
+    }
+  };
+
+  // Request One-Click Fix Patch for Finding
+  const requestFix = async (finding) => {
+    if (!currentRepo) return;
+    const repoUrl = currentRepoUrl || currentRepo.htmlUrl;
+    return await generateAuditFix(repoUrl, finding, sessionKeys);
+  };
+
+  // Update status for a finding (reviewed, false positive, accepted risk)
+  const markFindingStatus = (findingId, status) => {
+    setDismissedFindings(prev => {
+      const next = { ...prev, [findingId]: status };
+      try {
+        localStorage.setItem(STORAGE_KEY_DISMISSED, JSON.stringify(next));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  };
+
+  // Request Feature 3: Instant Onboarding Summary
+  const requestOnboarding = async (forceRefresh = false) => {
+    if (!currentRepo) return;
+    if (onboardingData && !forceRefresh) return onboardingData;
+
+    setIsOnboardingLoading(true);
+    setOnboardingError(null);
+
+    try {
+      const repoUrl = currentRepoUrl || currentRepo.htmlUrl;
+      const data = await fetchOnboardingSummary(repoUrl, sessionKeys);
+      setOnboardingData(data);
+      return data;
+    } catch (err) {
+      setOnboardingError(err.message || 'Failed to generate onboarding summary.');
+      throw err;
+    } finally {
+      setIsOnboardingLoading(false);
+    }
+  };
+
+  // Request Legacy AI Summary
   const requestSummary = async () => {
     if (!currentRepo) return;
     setIsSummaryLoading(true);
@@ -191,6 +313,7 @@ export function RepositoryProvider({ children }) {
         sessionKeys
       );
       setSummaryData(data);
+      return data;
     } catch (err) {
       setSummaryError(err.message || 'Failed to generate AI summary.');
       throw err;
@@ -199,7 +322,7 @@ export function RepositoryProvider({ children }) {
     }
   };
 
-  // Ask question about codebase
+  // Grounded Codebase Chat
   const ask = async (questionText) => {
     if (!currentRepo || !questionText.trim()) return;
     setIsAsking(true);
@@ -215,10 +338,11 @@ export function RepositoryProvider({ children }) {
     setChatMessages(prev => [...prev, userMessage]);
 
     try {
-      const answerData = await askQuestion(
-        currentRepo.owner.login,
-        currentRepo.name,
+      const repoUrl = currentRepoUrl || currentRepo.htmlUrl;
+      const answerData = await sendCodebaseChat(
+        repoUrl,
         questionText.trim(),
+        chatMessages,
         sessionKeys
       );
 
@@ -228,7 +352,7 @@ export function RepositoryProvider({ children }) {
         answer: answerData.answer,
         confidence: answerData.confidence,
         hasSufficientEvidence: answerData.hasSufficientEvidence,
-        references: answerData.references || [],
+        citations: answerData.citations || [],
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
@@ -248,13 +372,26 @@ export function RepositoryProvider({ children }) {
     }
   };
 
+  const clearChat = () => {
+    setChatMessages([]);
+    setChatError(null);
+  };
+
+  const toggleChatDrawer = () => {
+    setIsChatDrawerOpen(prev => !prev);
+  };
+
   const clearActiveRepo = () => {
     setCurrentRepo(null);
+    setCurrentRepoUrl('');
     setFileTree([]);
     setAllFilesList([]);
     setRepoStats(null);
     setSelectedFile(null);
     setSummaryData(null);
+    setArchitectureData(null);
+    setAuditData(null);
+    setOnboardingData(null);
     setChatMessages([]);
     setAnalysisError(null);
   };
@@ -263,6 +400,7 @@ export function RepositoryProvider({ children }) {
     <RepositoryContext.Provider
       value={{
         currentRepo,
+        currentRepoUrl,
         fileTree,
         allFilesList,
         repoStats,
@@ -274,9 +412,20 @@ export function RepositoryProvider({ children }) {
         summaryData,
         isSummaryLoading,
         summaryError,
+        architectureData,
+        isArchitectureLoading,
+        architectureError,
+        auditData,
+        isAuditLoading,
+        auditError,
+        dismissedFindings,
+        onboardingData,
+        isOnboardingLoading,
+        onboardingError,
         chatMessages,
         isAsking,
         chatError,
+        isChatDrawerOpen,
         isAnalyzing,
         analysisError,
         systemStatus,
@@ -284,8 +433,16 @@ export function RepositoryProvider({ children }) {
         history,
         analyze,
         selectFile,
+        requestArchitecture,
+        requestAudit,
+        requestFix,
+        markFindingStatus,
+        requestOnboarding,
         requestSummary,
         ask,
+        clearChat,
+        toggleChatDrawer,
+        setIsChatDrawerOpen,
         updateSessionKeys,
         clearActiveRepo,
         refreshStatus

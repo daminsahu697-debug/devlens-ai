@@ -9,7 +9,8 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
-  Layers
+  Layers,
+  Stethoscope
 } from 'lucide-react';
 import { useRepository } from '../context/RepositoryContext';
 
@@ -18,6 +19,8 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }) {
 
   const navItems = [
     { to: '/', label: 'Overview', icon: Compass },
+    { to: '/architecture', label: 'Architecture X-Ray', icon: Layers },
+    { to: '/audit', label: 'Doctor Checkup', icon: Stethoscope },
     { to: '/analyzer', label: 'Repository Analyzer', icon: Code2 },
     { to: '/ask', label: 'Ask Your Codebase', icon: MessageSquareCode },
     { to: '/history', label: 'Analysis History', icon: History },

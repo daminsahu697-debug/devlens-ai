@@ -270,3 +270,13 @@ function parseJsonSafely(text) {
     };
   }
 }
+
+/**
+ * Calls LLM and ensures response is parsed into JSON.
+ */
+export async function callLlmWithJson(prompt, apiKey, systemInstruction = SYSTEM_SECURITY_PROMPT) {
+  const rawText = await callLlm(prompt, apiKey, systemInstruction);
+  return parseJsonSafely(rawText);
+}
+
+export { callLlm, parseJsonSafely, SYSTEM_SECURITY_PROMPT };

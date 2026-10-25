@@ -4,10 +4,13 @@ import { RepositoryProvider } from './context/RepositoryContext';
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
 import Dashboard from './pages/Dashboard';
+import ArchitecturePage from './pages/ArchitecturePage';
+import DoctorCheckupPage from './pages/DoctorCheckupPage';
 import AnalyzerPage from './pages/AnalyzerPage';
 import AskCodebasePage from './pages/AskCodebasePage';
 import HistoryPage from './pages/HistoryPage';
 import SettingsPage from './pages/SettingsPage';
+import CodebaseChatDrawer from './components/CodebaseChatDrawer';
 
 function AppLayout() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -19,7 +22,17 @@ function AppLayout() {
       case '/':
         return {
           title: 'DevLens AI — Repository Dashboard',
-          desc: 'Understand any codebase with verified GitHub metadata and architectural intelligence.'
+          desc: 'Instant Onboarding, verified tech stack metrics, and architectural intelligence.'
+        };
+      case '/architecture':
+        return {
+          title: 'Interactive Architecture Map — X-Ray View',
+          desc: 'Interactive visual component topology with verified and inferred relationships.'
+        };
+      case '/audit':
+        return {
+          title: 'Smart Bug & Security Audit — Doctor Checkup',
+          desc: 'Deterministic OWASP vulnerability scanning + AI review with reviewable code diff patches.'
         };
       case '/analyzer':
         return {
@@ -81,6 +94,8 @@ function AppLayout() {
         <main className="flex-1 p-4 md:p-8">
           <Routes>
             <Route path="/" element={<Dashboard />} />
+            <Route path="/architecture" element={<ArchitecturePage />} />
+            <Route path="/audit" element={<DoctorCheckupPage />} />
             <Route path="/analyzer" element={<AnalyzerPage />} />
             <Route path="/ask" element={<AskCodebasePage />} />
             <Route path="/history" element={<HistoryPage />} />
@@ -88,8 +103,11 @@ function AppLayout() {
           </Routes>
         </main>
 
+        {/* Global Dockable / Floating Codebase Assistant */}
+        <CodebaseChatDrawer />
+
         <footer className="py-4 px-8 border-t border-surface-700/60 bg-surface-900/40 text-center text-xs text-slate-500">
-          DevLens AI — AI-Powered GitHub Repository Analyzer • Built for Software Engineering Internship Interviews
+          DevLens AI — AI-Powered GitHub Repository Analyzer • Architecture X-Ray • Doctor Checkup • Instant Onboarding
         </footer>
       </div>
     </div>

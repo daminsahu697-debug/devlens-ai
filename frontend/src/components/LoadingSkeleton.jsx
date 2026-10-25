@@ -70,3 +70,7 @@ export function SummarySkeleton() {
     </div>
   );
 }
+
+export default function LoadingSkeleton() {
+  return <CardSkeleton />;
+}

@@ -94,6 +94,66 @@ export async function askQuestion(owner, repo, question, sessionKeys) {
 }
 
 /**
+ * Fetches Architecture Map (Feature 1: X-Ray View).
+ */
+export async function fetchArchitecture(repoUrl, sessionKeys) {
+  const response = await fetch(`${API_BASE}/repository/architecture`, {
+    method: 'POST',
+    headers: buildHeaders(sessionKeys),
+    body: JSON.stringify({ repoUrl })
+  });
+  return handleResponse(response);
+}
+
+/**
+ * Runs Security & Bug Audit (Feature 2: Doctor Checkup).
+ */
+export async function fetchAudit(repoUrl, sessionKeys) {
+  const response = await fetch(`${API_BASE}/repository/audit`, {
+    method: 'POST',
+    headers: buildHeaders(sessionKeys),
+    body: JSON.stringify({ repoUrl })
+  });
+  return handleResponse(response);
+}
+
+/**
+ * Generates Reviewable Patch Diff for Audit Finding.
+ */
+export async function generateAuditFix(repoUrl, finding, sessionKeys) {
+  const response = await fetch(`${API_BASE}/repository/audit/fix`, {
+    method: 'POST',
+    headers: buildHeaders(sessionKeys),
+    body: JSON.stringify({ repoUrl, finding })
+  });
+  return handleResponse(response);
+}
+
+/**
+ * Fetches Technical Summary & Setup Guide (Feature 3: Instant Onboarding).
+ */
+export async function fetchOnboardingSummary(repoUrl, sessionKeys) {
+  const response = await fetch(`${API_BASE}/repository/summary`, {
+    method: 'POST',
+    headers: buildHeaders(sessionKeys),
+    body: JSON.stringify({ repoUrl })
+  });
+  return handleResponse(response);
+}
+
+/**
+ * Grounded Codebase Chat with exact line citations.
+ */
+export async function sendCodebaseChat(repoUrl, question, history, sessionKeys) {
+  const response = await fetch(`${API_BASE}/repository/chat`, {
+    method: 'POST',
+    headers: buildHeaders(sessionKeys),
+    body: JSON.stringify({ repoUrl, question, history })
+  });
+  return handleResponse(response);
+}
+
+/**
  * Retrieves backend system configuration status.
  */
 export async function getSystemStatus(sessionKeys) {
@@ -103,3 +163,4 @@ export async function getSystemStatus(sessionKeys) {
   });
   return handleResponse(response);
 }
+

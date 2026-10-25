@@ -29,7 +29,9 @@ after(() => {
 
 describe('API Route Integration Tests', () => {
   test('GET / - Root returns operational status', async () => {
-    const res = await fetch(`${baseUrl}/`);
+    const res = await fetch(`${baseUrl}/`, {
+      headers: { 'Accept': 'application/json' }
+    });
     assert.strictEqual(res.status, 200);
     const body = await res.json();
     assert.strictEqual(body.success, true);
@@ -90,19 +92,28 @@ describe('API Route Integration Tests', () => {
   });
 
   test('POST /api/ai/summarize - Returns clear error when AI key is missing (400)', async () => {
-    const res = await fetch(`${baseUrl}/api/ai/summarize`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        owner: 'expressjs',
-        repo: 'express'
-      })
-    });
-    assert.strictEqual(res.status, 400);
-    const body = await res.json();
-    assert.strictEqual(body.success, false);
-    assert.strictEqual(body.error.code, 'AI_NOT_CONFIGURED');
-    assert.match(body.error.message, /LLM_API_KEY/);
+    const origKey = process.env.LLM_API_KEY;
+    const origGemini = process.env.GEMINI_API_KEY;
+    delete process.env.LLM_API_KEY;
+    delete process.env.GEMINI_API_KEY;
+    try {
+      const res = await fetch(`${baseUrl}/api/ai/summarize`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          owner: 'expressjs',
+          repo: 'express'
+        })
+      });
+      assert.strictEqual(res.status, 400);
+      const body = await res.json();
+      assert.strictEqual(body.success, false);
+      assert.strictEqual(body.error.code, 'AI_NOT_CONFIGURED');
+      assert.match(body.error.message, /LLM_API_KEY/);
+    } finally {
+      if (origKey) process.env.LLM_API_KEY = origKey;
+      if (origGemini) process.env.GEMINI_API_KEY = origGemini;
+    }
   });
 
   test('POST /api/ai/ask - Rejects empty question (400)', async () => {
