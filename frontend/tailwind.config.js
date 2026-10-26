@@ -9,13 +9,13 @@ export default {
     extend: {
       colors: {
         surface: {
-          950: '#070b12', // Deepest background
-          900: '#0d1320', // Main background / sidebar
-          850: '#11192b', // Card background
-          800: '#162238', // Elevated card / hover state
-          750: '#1c2b46', // Input / border highlight
-          700: '#243656', // Subtle border
-          600: '#324a73', // Active border
+          950: '#09090b', // Deep clean neutral dark (zinc-950)
+          900: '#121215', // Main background / sidebar
+          850: '#18181b', // Card background (zinc-900)
+          800: '#202024', // Elevated card / hover state
+          750: '#27272a', // Subtle border (zinc-800)
+          700: '#323238', // Border highlight
+          600: '#3f3f46', // Active border (zinc-700)
         },
         accent: {
           blue: '#3b82f6',

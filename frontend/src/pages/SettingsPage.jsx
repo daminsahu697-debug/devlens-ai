@@ -51,28 +51,28 @@ export default function SettingsPage() {
   const isLlmConfigured = systemStatus?.llmConfigured || Boolean(sessionKeys?.geminiApiKey);
 
   return (
-    <div className="space-y-8 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-4xl mx-auto pb-12">
       {/* Title */}
       <div>
-        <h2 className="text-xl md:text-2xl font-extrabold text-white tracking-tight">
+        <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight">
           System & API Settings
         </h2>
-        <p className="text-xs md:text-sm text-slate-400">
+        <p className="text-xs md:text-sm text-zinc-400">
           Configure AI provider credentials, GitHub tokens, and view system status.
         </p>
       </div>
 
       {/* Backend Status Banner */}
-      <div className="bg-surface-850 border border-surface-700/80 rounded-2xl p-5 shadow-lg">
+      <div className="bg-surface-900 border border-surface-750 rounded-2xl p-5 shadow-sm">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-          <div className="flex items-center gap-2.5">
-            <Server className="w-5 h-5 text-indigo-400" />
+          <div className="flex items-center gap-2">
+            <Server className="w-4 h-4 text-zinc-400" />
             <h3 className="text-sm font-bold text-white">Live Backend Status</h3>
           </div>
           <button
             onClick={handleTestConnection}
             disabled={isTesting}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-surface-800 hover:bg-surface-750 border border-surface-700 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-300 hover:text-white bg-surface-800 hover:bg-surface-750 border border-surface-700 transition-colors"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isTesting ? 'animate-spin' : ''}`} />
             <span>Test Connection & Refresh</span>
@@ -80,55 +80,55 @@ export default function SettingsPage() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="p-3 rounded-xl bg-surface-900 border border-surface-750">
-            <span className="text-[11px] text-slate-400 uppercase tracking-wider block mb-1">AI Engine Status</span>
+          <div className="p-3 rounded-xl bg-surface-950 border border-surface-750">
+            <span className="text-[10px] text-zinc-500 uppercase tracking-wider block mb-1 font-mono">AI Engine Status</span>
             <div className="flex items-center gap-2">
-              <span className={`w-2.5 h-2.5 rounded-full ${isLlmConfigured ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+              <span className={`w-2 h-2 rounded-full ${isLlmConfigured ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
               <span className="text-xs font-semibold text-white">
                 {isLlmConfigured ? 'Key Configured (Active)' : 'Key Missing'}
               </span>
             </div>
-            <p className="text-[10px] text-slate-500 mt-1">
+            <p className="text-[10px] text-zinc-500 mt-1 font-mono">
               Provider: {systemStatus?.llmProvider || 'gemini'} ({systemStatus?.llmModel || 'gemini-1.5-flash'})
             </p>
           </div>
 
-          <div className="p-3 rounded-xl bg-surface-900 border border-surface-750">
-            <span className="text-[11px] text-slate-400 uppercase tracking-wider block mb-1">GitHub API Rate Limit</span>
+          <div className="p-3 rounded-xl bg-surface-950 border border-surface-750">
+            <span className="text-[10px] text-zinc-500 uppercase tracking-wider block mb-1 font-mono">GitHub Rate Limit</span>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-bold text-indigo-300">
+              <span className="text-xs font-mono font-bold text-white">
                 {systemStatus?.rateLimit?.remaining !== null && systemStatus?.rateLimit?.remaining !== undefined
                   ? `${systemStatus.rateLimit.remaining} / ${systemStatus.rateLimit.limit} req/hr`
                   : 'Checking...'}
               </span>
             </div>
-            <p className="text-[10px] text-slate-500 mt-1">
-              {systemStatus?.githubTokenConfigured ? 'Personal token attached (5,000 max)' : 'Unauthenticated (60 max)'}
+            <p className="text-[10px] text-zinc-500 mt-1">
+              Reset in {systemStatus?.rateLimit?.resetMinutes ?? 60} minutes
             </p>
           </div>
 
-          <div className="p-3 rounded-xl bg-surface-900 border border-surface-750">
-            <span className="text-[11px] text-slate-400 uppercase tracking-wider block mb-1">Security Standard</span>
-            <div className="flex items-center gap-1.5 text-emerald-400 text-xs font-medium">
-              <ShieldCheck className="w-4 h-4 shrink-0" />
-              <span>Prompt Guard Active</span>
+          <div className="p-3 rounded-xl bg-surface-950 border border-surface-750">
+            <span className="text-[10px] text-zinc-500 uppercase tracking-wider block mb-1 font-mono">API Health</span>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span className="text-xs font-semibold text-white">Operational</span>
             </div>
-            <p className="text-[10px] text-slate-500 mt-1">
-              Untrusted code isolation enabled
+            <p className="text-[10px] text-zinc-500 mt-1 font-mono">
+              Serverless Node.js
             </p>
           </div>
         </div>
       </div>
 
       {/* In-Session Key Configuration */}
-      <div className="bg-surface-850 border border-surface-700/80 rounded-2xl p-6 shadow-lg space-y-6">
+      <div className="bg-surface-900 border border-surface-750 rounded-2xl p-6 shadow-sm space-y-5">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <Lock className="w-4 h-4 text-indigo-400" />
+            <Lock className="w-4 h-4 text-zinc-400" />
             <h3 className="text-base font-bold text-white">In-Session API Configuration</h3>
           </div>
-          <p className="text-xs text-slate-400">
-            Keys entered here are stored strictly in your browser's <code className="bg-surface-800 px-1 py-0.5 rounded text-indigo-300">sessionStorage</code> and transmitted via encrypted headers for this session. They are never written to permanent storage or logs.
+          <p className="text-xs text-zinc-400">
+            Keys entered here are stored in your browser's <code className="bg-surface-950 px-1 py-0.5 rounded text-zinc-300 font-mono">sessionStorage</code> and transmitted via headers for this session.
           </p>
         </div>
 
@@ -136,15 +136,15 @@ export default function SettingsPage() {
           {/* Gemini API Key */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-                <Key className="w-3.5 h-3.5 text-indigo-400" />
+              <label className="text-xs font-medium text-zinc-300 flex items-center gap-1.5">
+                <Key className="w-3.5 h-3.5 text-zinc-400" />
                 Google Gemini API Key
               </label>
               <a
                 href="https://aistudio.google.com/app/apikey"
                 target="_blank"
                 rel="noreferrer"
-                className="text-[11px] text-blue-400 hover:text-blue-300 flex items-center gap-1 hover:underline"
+                className="text-[11px] text-zinc-400 hover:text-white flex items-center gap-1 underline"
               >
                 <span>Get Free Gemini Key</span>
                 <ExternalLink className="w-3 h-3" />
@@ -158,33 +158,33 @@ export default function SettingsPage() {
                 value={geminiKeyInput}
                 onChange={(e) => setGeminiKeyInput(e.target.value)}
                 placeholder="AIzaSy..."
-                className="w-full bg-surface-900 border border-surface-700/80 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono pr-10"
+                className="w-full bg-surface-950 border border-surface-750 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 font-mono pr-10"
               />
               <button
                 type="button"
                 onClick={() => setShowGeminiKey(!showGeminiKey)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
               >
                 {showGeminiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-            <p className="text-[11px] text-slate-400">
-              Required for AI Project Summaries and Ask Your Codebase Q&A.
+            <p className="text-[11px] text-zinc-500">
+              Required for AI Project Summaries and Ask Codebase Q&A.
             </p>
           </div>
 
           {/* GitHub Personal Access Token (Optional) */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-                <GithubIcon className="w-3.5 h-3.5 text-slate-400" />
+              <label className="text-xs font-medium text-zinc-300 flex items-center gap-1.5">
+                <GithubIcon className="w-3.5 h-3.5 text-zinc-400" />
                 GitHub Personal Access Token (Optional)
               </label>
               <a
                 href="https://github.com/settings/tokens"
                 target="_blank"
                 rel="noreferrer"
-                className="text-[11px] text-blue-400 hover:text-blue-300 flex items-center gap-1 hover:underline"
+                className="text-[11px] text-zinc-400 hover:text-white flex items-center gap-1 underline"
               >
                 <span>Generate at GitHub</span>
                 <ExternalLink className="w-3 h-3" />
@@ -198,17 +198,17 @@ export default function SettingsPage() {
                 value={githubTokenInput}
                 onChange={(e) => setGithubTokenInput(e.target.value)}
                 placeholder="ghp_... (No special scopes required for public repositories)"
-                className="w-full bg-surface-900 border border-surface-700/80 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono pr-10"
+                className="w-full bg-surface-950 border border-surface-750 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 font-mono pr-10"
               />
               <button
                 type="button"
                 onClick={() => setShowGithubToken(!showGithubToken)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
               >
                 {showGithubToken ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-zinc-500">
               Optional: Increases GitHub API limit from 60 to 5,000 requests per hour.
             </p>
           </div>
@@ -219,7 +219,7 @@ export default function SettingsPage() {
               <button
                 type="submit"
                 id="save-settings-button"
-                className="px-5 py-2 rounded-xl text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 transition-colors shadow-md shadow-indigo-600/20"
+                className="px-5 py-2 rounded-xl text-xs font-medium text-zinc-950 bg-white hover:bg-zinc-200 transition-colors"
               >
                 Save Session Keys
               </button>
@@ -227,7 +227,7 @@ export default function SettingsPage() {
                 <button
                   type="button"
                   onClick={handleClearKeys}
-                  className="px-3 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-rose-300 transition-colors"
+                  className="px-3 py-2 rounded-xl text-xs font-medium text-zinc-400 hover:text-rose-400 transition-colors"
                 >
                   Clear Keys
                 </button>
@@ -235,32 +235,31 @@ export default function SettingsPage() {
             </div>
 
             {saveFeedback && (
-              <span className="text-xs text-emerald-400 flex items-center gap-1 font-medium">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Keys saved for this session!
+              <span className="text-xs text-emerald-400 flex items-center gap-1 font-medium font-mono">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Keys saved!
               </span>
             )}
           </div>
         </form>
       </div>
 
-      {/* Alternative Permanent Server Configuration Guidance */}
-      <div className="bg-surface-850 border border-surface-700/80 rounded-2xl p-6 shadow-lg space-y-4">
+      {/* Permanent Backend .env Configuration */}
+      <div className="bg-surface-900 border border-surface-750 rounded-2xl p-6 shadow-sm space-y-3">
         <div className="flex items-center gap-2">
-          <Server className="w-4 h-4 text-indigo-400" />
+          <Server className="w-4 h-4 text-zinc-400" />
           <h3 className="text-sm font-bold text-white">Permanent Backend .env Configuration</h3>
         </div>
-        <p className="text-xs text-slate-400 leading-relaxed">
-          If you prefer to configure keys directly on your development machine so they persist across restarts without using browser session storage:
+        <p className="text-xs text-zinc-400 leading-relaxed">
+          Configure keys directly on your development machine in <code className="bg-surface-950 px-1 py-0.5 rounded text-zinc-300 font-mono">devlens-ai/backend/.env</code>:
         </p>
 
-        <div className="bg-surface-950 border border-surface-800 rounded-xl p-4 font-mono text-xs text-slate-300 space-y-1">
-          <p className="text-slate-500"># 1. Open devlens-ai/backend/.env in your editor</p>
-          <p className="text-indigo-300">LLM_PROVIDER=gemini</p>
-          <p className="text-indigo-300">LLM_API_KEY=your_gemini_api_key_here</p>
-          <p className="text-indigo-300">LLM_MODEL=gemini-1.5-flash</p>
-          <p className="text-slate-500"># Optional GitHub Personal Access Token:</p>
-          <p className="text-indigo-300">GITHUB_TOKEN=your_github_token_here</p>
-          <p className="text-slate-500 pt-2"># 2. Restart backend server: npm run dev</p>
+        <div className="bg-surface-950 border border-surface-750 rounded-xl p-4 font-mono text-xs text-zinc-300 space-y-1">
+          <p className="text-zinc-500"># devlens-ai/backend/.env</p>
+          <p className="text-zinc-200">LLM_PROVIDER=gemini</p>
+          <p className="text-zinc-200">LLM_API_KEY=your_gemini_api_key_here</p>
+          <p className="text-zinc-200">LLM_MODEL=gemini-1.5-flash</p>
+          <p className="text-zinc-500 pt-1"># Optional GitHub Personal Access Token:</p>
+          <p className="text-zinc-200">GITHUB_TOKEN=your_github_token_here</p>
         </div>
       </div>
     </div>

@@ -57,9 +57,9 @@ export default function ErrorMessage({ title = 'Error', message, code, onRetry, 
             {isKeyError && (
               <Link
                 to="/settings"
-                className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 rounded-lg border border-indigo-500/30 transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 bg-surface-800 hover:bg-surface-750 text-white rounded-lg border border-surface-700 transition-colors"
               >
-                <Key className="w-3.5 h-3.5" /> Configure API Key
+                <Key className="w-3.5 h-3.5 text-zinc-400" /> Configure API Key
               </Link>
             )}
           </div>

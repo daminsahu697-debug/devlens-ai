@@ -286,7 +286,7 @@ export default function DoctorCheckupPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search findings or files..."
-              className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-surface-950 border border-surface-700 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+              className="w-full pl-8 pr-3 py-1.5 rounded-lg bg-surface-950 border border-surface-700 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-surface-500"
             />
           </div>
 
@@ -324,7 +324,7 @@ export default function DoctorCheckupPage() {
       {/* Findings List */}
       {isAuditLoading ? (
         <div className="p-12 text-center rounded-2xl bg-surface-900/60 border border-surface-700/60">
-          <RefreshCw className="w-8 h-8 text-indigo-400 animate-spin mx-auto mb-3" />
+          <RefreshCw className="w-8 h-8 text-slate-400 animate-spin mx-auto mb-3" />
           <h3 className="text-sm font-semibold text-slate-200">Executing Doctor Checkup Scan...</h3>
           <p className="text-xs text-slate-500 mt-1">Testing deterministic rules and reasoning with Gemini AI</p>
         </div>
@@ -334,7 +334,7 @@ export default function DoctorCheckupPage() {
           <p className="text-sm font-semibold text-rose-300">{auditError}</p>
           <button
             onClick={() => requestAudit(true)}
-            className="mt-3 px-4 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold"
+            className="mt-3 px-4 py-1.5 rounded-lg bg-surface-800 hover:bg-surface-700 text-white border border-surface-600 text-xs font-semibold"
           >
             Retry Scan
           </button>

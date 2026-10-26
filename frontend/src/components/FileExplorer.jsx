@@ -66,25 +66,25 @@ export default function FileExplorer() {
       <div className="p-3.5 border-b border-surface-700/80 bg-surface-900/60 space-y-2.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Folder className="w-4 h-4 text-indigo-400" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-200">
+            <Folder className="w-4 h-4 text-zinc-400" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300 font-mono">
               Repository Files
             </h3>
           </div>
-          <span className="text-[11px] font-mono text-slate-400 bg-surface-800 px-2 py-0.5 rounded border border-surface-700">
+          <span className="text-[11px] font-mono text-zinc-400 bg-surface-800 px-2 py-0.5 rounded border border-surface-700">
             {filteredFiles.length} files
           </span>
         </div>
 
         {/* Search input */}
         <div className="relative">
-          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search filenames or paths..."
-            className="w-full bg-surface-800 text-xs text-white placeholder-slate-500 rounded-lg pl-8 pr-3 py-1.5 border border-surface-700 focus:outline-none focus:border-indigo-500 transition-colors"
+            className="w-full bg-surface-800 text-xs text-white placeholder-zinc-500 rounded-lg pl-8 pr-3 py-1.5 border border-surface-700 focus:outline-none focus:border-zinc-500 transition-colors"
           />
         </div>
 
@@ -96,8 +96,8 @@ export default function FileExplorer() {
               onClick={() => setActiveFilter(filter)}
               className={`px-2 py-0.5 text-[11px] font-medium rounded-md capitalize transition-colors ${
                 activeFilter === filter
-                  ? 'bg-indigo-600 text-white'
-                  : 'bg-surface-800 text-slate-400 hover:text-slate-200 border border-surface-700'
+                  ? 'bg-surface-800 text-white border border-surface-700'
+                  : 'bg-surface-950 text-zinc-400 hover:text-white border border-surface-750'
               }`}
             >
               {filter}
@@ -109,7 +109,7 @@ export default function FileExplorer() {
       {/* File List */}
       <div className="flex-1 overflow-y-auto p-1.5 space-y-0.5">
         {filteredFiles.length === 0 ? (
-          <div className="py-12 text-center text-xs text-slate-500">
+          <div className="py-12 text-center text-xs text-zinc-500">
             {searchQuery ? 'No files match your search filter.' : 'No files discovered in repository.'}
           </div>
         ) : (
@@ -127,8 +127,8 @@ export default function FileExplorer() {
                 disabled={isFileLoading && isSelected}
                 className={`w-full flex items-center justify-between text-left px-2.5 py-1.5 rounded-lg text-xs group transition-colors ${
                   isSelected
-                    ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/40'
-                    : 'text-slate-300 hover:bg-surface-800 hover:text-white border border-transparent'
+                    ? 'bg-surface-800 text-white border border-surface-700 font-semibold'
+                    : 'text-zinc-300 hover:bg-surface-800/60 hover:text-white border border-transparent'
                 }`}
               >
                 <div className="flex items-center gap-2 min-w-0 flex-1">

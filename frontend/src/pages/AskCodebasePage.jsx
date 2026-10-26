@@ -16,8 +16,8 @@ export default function AskCodebasePage() {
     return (
       <div className="space-y-6 max-w-5xl mx-auto">
         <div className="space-y-2">
-          <h2 className="text-xl md:text-2xl font-extrabold text-white">Ask Your Codebase</h2>
-          <p className="text-xs md:text-sm text-slate-400">
+          <h2 className="text-xl md:text-2xl font-bold text-white">Ask Your Codebase</h2>
+          <p className="text-xs md:text-sm text-zinc-400">
             Ask targeted questions grounded in source code. Analyze a repository first.
           </p>
           <div className="pt-2">
@@ -32,27 +32,27 @@ export default function AskCodebasePage() {
   return (
     <div className="space-y-4 max-w-7xl mx-auto">
       {/* Top Bar for Q&A */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-surface-900 border border-surface-700/80 rounded-2xl p-3.5 shadow-md">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-surface-900 border border-surface-750 rounded-2xl p-3.5 shadow-sm">
         <div className="flex items-center gap-2">
-          <MessageSquareCode className="w-5 h-5 text-indigo-400" />
-          <h2 className="text-sm font-bold text-white">
-            Codebase Q&A — <span className="font-mono text-indigo-300">{currentRepo.fullName}</span>
+          <MessageSquareCode className="w-4 h-4 text-zinc-400" />
+          <h2 className="text-sm font-bold text-white font-mono">
+            <span className="text-zinc-400 font-sans font-normal">Codebase Q&A:</span> <span>{currentRepo.fullName}</span>
           </h2>
         </div>
 
         <button
           onClick={() => setShowViewerSideBySide(!showViewerSideBySide)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white bg-surface-800 hover:bg-surface-750 border border-surface-700 transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-300 hover:text-white bg-surface-800 hover:bg-surface-750 border border-surface-700 transition-colors"
         >
           {showViewerSideBySide ? (
             <>
-              <EyeOff className="w-3.5 h-3.5" />
-              <span>Hide Side-by-Side Viewer</span>
+              <EyeOff className="w-3.5 h-3.5 text-zinc-400" />
+              <span>Hide Split Viewer</span>
             </>
           ) : (
             <>
-              <Eye className="w-3.5 h-3.5" />
-              <span>Show Code Viewer Side-by-Side</span>
+              <Eye className="w-3.5 h-3.5 text-zinc-400" />
+              <span>Show Split Viewer</span>
             </>
           )}
         </button>
