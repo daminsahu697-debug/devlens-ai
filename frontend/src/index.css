@@ -35,7 +35,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3b82f6;
+  background: #475569;
 }
 
 /* Code block line numbers and styling */
@@ -46,12 +46,12 @@ body {
 }
 
 .code-line:hover {
-  background-color: rgba(59, 130, 246, 0.08);
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 .code-line.highlighted {
-  background-color: rgba(99, 102, 241, 0.2);
-  border-left: 2px solid #6366f1;
+  background-color: rgba(255, 255, 255, 0.08);
+  border-left: 2px solid #94a3b8;
 }
 
 /* Subtle glassmorphism utilities */
@@ -92,8 +92,8 @@ body {
 .react-flow__handle {
   width: 8px !important;
   height: 8px !important;
-  background: #6366f1 !important;
-  border: 2px solid #0f172a !important;
+  background: #94a3b8 !important;
+  border: 2px solid #070b12 !important;
 }
 
 .react-flow__controls {

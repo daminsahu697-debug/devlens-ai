@@ -106,37 +106,36 @@ export default function Dashboard() {
           {/* Quick Jump Action Cards for Features */}
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <Layers className="w-4 h-4 text-indigo-400" />
+              <Layers className="w-4 h-4 text-slate-400" />
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-300">
                 Explore Advanced Intelligence for {currentRepo.name}
               </h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Feature 1: Architecture X-Ray */}
+              {/* Feature 1: Architecture Blueprint */}
               <button
                 onClick={() => navigate('/architecture')}
-                className="group relative p-6 rounded-2xl bg-surface-900/90 hover:bg-surface-850 border border-surface-700/80 hover:border-indigo-500/50 text-left transition-all duration-200 shadow-xl hover:shadow-2xl hover:shadow-indigo-500/10 flex flex-col justify-between overflow-hidden"
+                className="group relative p-6 rounded-2xl bg-surface-900 hover:bg-surface-850 border border-surface-750 hover:border-slate-500 text-left transition-all duration-200 shadow-sm hover:shadow-md flex flex-col justify-between"
               >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-indigo-500/10 transition-colors"></div>
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 group-hover:scale-110 transition-transform shadow-md shadow-indigo-600/20">
+                    <div className="p-2.5 rounded-xl bg-surface-800 text-slate-200 border border-surface-700 group-hover:text-white transition-colors">
                       <Layers className="w-5 h-5" />
                     </div>
-                    <span className="px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono text-[10px] font-semibold border border-indigo-500/30">
-                      X-Ray Topology
+                    <span className="px-2 py-0.5 rounded-md bg-surface-800 text-slate-300 font-mono text-[10px] font-medium border border-surface-700">
+                      System Topology
                     </span>
                   </div>
-                  <h4 className="text-base font-bold text-white group-hover:text-indigo-300 transition-colors tracking-tight">
-                    Interactive Architecture Map
+                  <h4 className="text-base font-bold text-white group-hover:text-slate-200 transition-colors tracking-tight">
+                    Architecture Blueprint
                   </h4>
                   <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                    Interactive component graph with verified static imports, API routes, and ORM database relations.
+                    Clear 3-tier system breakdown with verified static imports, API routes, and cloud service dependencies.
                   </p>
                 </div>
-                <div className="mt-5 pt-3.5 border-t border-surface-800 flex items-center justify-between text-xs font-semibold text-indigo-400">
-                  <span>Explore Topology</span>
+                <div className="mt-5 pt-3.5 border-t border-surface-800 flex items-center justify-between text-xs font-medium text-slate-300 group-hover:text-white">
+                  <span>View Architecture</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
               </button>
@@ -144,26 +143,25 @@ export default function Dashboard() {
               {/* Feature 2: Doctor Checkup */}
               <button
                 onClick={() => navigate('/audit')}
-                className="group relative p-6 rounded-2xl bg-surface-900/90 hover:bg-surface-850 border border-surface-700/80 hover:border-emerald-500/50 text-left transition-all duration-200 shadow-xl hover:shadow-2xl hover:shadow-emerald-500/10 flex flex-col justify-between overflow-hidden"
+                className="group relative p-6 rounded-2xl bg-surface-900 hover:bg-surface-850 border border-surface-750 hover:border-slate-500 text-left transition-all duration-200 shadow-sm hover:shadow-md flex flex-col justify-between"
               >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/10 transition-colors"></div>
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 group-hover:scale-110 transition-transform shadow-md shadow-emerald-600/20">
+                    <div className="p-2.5 rounded-xl bg-surface-800 text-slate-200 border border-surface-700 group-hover:text-white transition-colors">
                       <Stethoscope className="w-5 h-5" />
                     </div>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono text-[10px] font-semibold border border-emerald-500/30">
+                    <span className="px-2 py-0.5 rounded-md bg-surface-800 text-slate-300 font-mono text-[10px] font-medium border border-surface-700">
                       Doctor Checkup
                     </span>
                   </div>
-                  <h4 className="text-base font-bold text-white group-hover:text-emerald-300 transition-colors tracking-tight">
+                  <h4 className="text-base font-bold text-white group-hover:text-slate-200 transition-colors tracking-tight">
                     Smart Bug & Security Audit
                   </h4>
                   <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                    Deterministic OWASP security rules + AI heuristic review with reviewable code diff patches.
+                    Deterministic OWASP security rules + AI heuristic review with reviewable unified diff patches.
                   </p>
                 </div>
-                <div className="mt-5 pt-3.5 border-t border-surface-800 flex items-center justify-between text-xs font-semibold text-emerald-400">
+                <div className="mt-5 pt-3.5 border-t border-surface-800 flex items-center justify-between text-xs font-medium text-slate-300 group-hover:text-white">
                   <span>Run Audit</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
@@ -172,26 +170,25 @@ export default function Dashboard() {
               {/* Feature 3: File Viewer & Analyzer */}
               <button
                 onClick={() => navigate('/analyzer')}
-                className="group relative p-6 rounded-2xl bg-surface-900/90 hover:bg-surface-850 border border-surface-700/80 hover:border-blue-500/50 text-left transition-all duration-200 shadow-xl hover:shadow-2xl hover:shadow-blue-500/10 flex flex-col justify-between overflow-hidden"
+                className="group relative p-6 rounded-2xl bg-surface-900 hover:bg-surface-850 border border-surface-750 hover:border-slate-500 text-left transition-all duration-200 shadow-sm hover:shadow-md flex flex-col justify-between"
               >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-blue-500/10 transition-colors"></div>
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <div className="p-3 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-400 group-hover:scale-110 transition-transform shadow-md shadow-blue-600/20">
+                    <div className="p-2.5 rounded-xl bg-surface-800 text-slate-200 border border-surface-700 group-hover:text-white transition-colors">
                       <Code2 className="w-5 h-5" />
                     </div>
-                    <span className="px-2.5 py-0.5 rounded-full bg-blue-500/20 text-blue-300 font-mono text-[10px] font-semibold border border-blue-500/30">
+                    <span className="px-2 py-0.5 rounded-md bg-surface-800 text-slate-300 font-mono text-[10px] font-medium border border-surface-700">
                       Code Viewer
                     </span>
                   </div>
-                  <h4 className="text-base font-bold text-white group-hover:text-blue-300 transition-colors tracking-tight">
+                  <h4 className="text-base font-bold text-white group-hover:text-slate-200 transition-colors tracking-tight">
                     Repository Analyzer
                   </h4>
                   <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
                     Browse source trees, inspect syntax with line numbers, and view grounded AI explanations.
                   </p>
                 </div>
-                <div className="mt-5 pt-3.5 border-t border-surface-800 flex items-center justify-between text-xs font-semibold text-blue-400">
+                <div className="mt-5 pt-3.5 border-t border-surface-800 flex items-center justify-between text-xs font-medium text-slate-300 group-hover:text-white">
                   <span>Browse Source</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </div>
