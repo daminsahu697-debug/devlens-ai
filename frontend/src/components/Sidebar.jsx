@@ -18,13 +18,13 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }) {
   const { currentRepo } = useRepository();
 
   const navItems = [
-    { to: '/', label: 'Overview', icon: Compass },
-    { to: '/architecture', label: 'Architecture Map', icon: Layers },
-    { to: '/audit', label: 'Doctor Checkup', icon: Stethoscope },
-    { to: '/analyzer', label: 'Repository Analyzer', icon: Code2 },
-    { to: '/ask', label: 'Ask Codebase', icon: MessageSquareCode },
-    { to: '/history', label: 'Analysis History', icon: History },
-    { to: '/settings', label: 'Settings', icon: Settings },
+    { to: '/', label: 'Overview', icon: Compass, color: 'text-sky-500' },
+    { to: '/architecture', label: 'Architecture Map', icon: Layers, color: 'text-indigo-500' },
+    { to: '/audit', label: 'Doctor Checkup', icon: Stethoscope, color: 'text-emerald-500' },
+    { to: '/analyzer', label: 'Repository Analyzer', icon: Code2, color: 'text-violet-500' },
+    { to: '/ask', label: 'Ask Codebase', icon: MessageSquareCode, color: 'text-amber-500' },
+    { to: '/history', label: 'Analysis History', icon: History, color: 'text-slate-500' },
+    { to: '/settings', label: 'Settings', icon: Settings, color: 'text-slate-500' },
   ];
 
   return (
@@ -36,13 +36,13 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }) {
       {/* Brand Header */}
       <div className="h-16 flex items-center justify-between px-4 border-b border-surface-750">
         <NavLink to="/" className="flex items-center gap-3 min-w-0">
-          <div className="w-9 h-9 rounded-xl bg-surface-800 border border-surface-700 flex items-center justify-center text-white shrink-0">
-            <Sparkles className="w-4 h-4 text-slate-300" />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white shrink-0 shadow-md shadow-sky-500/20">
+            <Sparkles className="w-4 h-4 text-white" />
           </div>
           {!isCollapsed && (
             <div className="min-w-0">
-              <span className="font-bold text-base text-white tracking-tight flex items-center gap-1.5">
-                DevLens <span className="text-[10px] px-1.5 py-0.2 rounded bg-surface-800 text-slate-300 font-mono border border-surface-700">AI</span>
+              <span className="font-bold text-base text-slate-900 dark:text-white tracking-tight flex items-center gap-1.5">
+                DevLens <span className="text-[10px] px-1.5 py-0.5 rounded bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 font-mono font-bold border border-sky-200 dark:border-sky-800/40">AI</span>
               </span>
               <p className="text-[10px] text-slate-500 truncate">Repo Intelligence Engine</p>
             </div>
@@ -51,7 +51,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }) {
 
         <button
           onClick={onToggleCollapse}
-          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-surface-800 transition-colors hidden md:block"
+          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-surface-800 transition-colors hidden md:block"
           title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
           {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -60,15 +60,15 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }) {
 
       {/* Active Repo Chip (if repository analyzed) */}
       {currentRepo && !isCollapsed && (
-        <div className="px-4 py-3 bg-surface-950/70 border-b border-surface-750">
-          <div className="flex items-center justify-between text-[10px] text-slate-500 mb-1 font-mono uppercase">
+        <div className="px-4 py-3 bg-sky-50/50 dark:bg-surface-950/70 border-b border-surface-750">
+          <div className="flex items-center justify-between text-[10px] text-slate-500 mb-1 font-mono uppercase font-semibold">
             <span>Target Repo</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           </div>
-          <p className="font-mono text-xs font-semibold text-white truncate">
+          <p className="font-mono text-xs font-bold text-slate-900 dark:text-white truncate">
             {currentRepo.fullName}
           </p>
-          <p className="text-[10px] text-slate-400 mt-0.5 font-mono">
+          <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 font-mono">
             ★ {currentRepo.stars.toLocaleString()} • {currentRepo.language}
           </p>
         </div>
@@ -84,20 +84,20 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }) {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all group ${
+                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
                   isActive
-                    ? 'bg-surface-800 text-white border border-surface-700 shadow-sm'
-                    : 'text-slate-400 hover:text-white hover:bg-surface-800/60 border border-transparent'
+                    ? 'bg-sky-50 dark:bg-surface-800 text-sky-700 dark:text-white border border-sky-200 dark:border-surface-700 shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-surface-800/80 border border-transparent'
                 } ${isCollapsed ? 'justify-center px-0' : ''}`
               }
               title={isCollapsed ? item.label : undefined}
             >
-              <Icon className="w-4 h-4 shrink-0 text-slate-400 group-hover:text-white transition-colors" />
+              <Icon className={`w-4 h-4 shrink-0 transition-transform group-hover:scale-110 ${item.color}`} />
               {!isCollapsed && (
                 <div className="flex items-center justify-between flex-1 min-w-0">
                   <span className="truncate">{item.label}</span>
                   {isFeatured && (
-                    <span className="px-1.5 py-0.2 rounded text-slate-400 font-mono text-[9px] uppercase border border-surface-700 bg-surface-950">
+                    <span className="px-1.5 py-0.5 rounded text-sky-700 dark:text-sky-300 font-mono text-[9px] font-bold uppercase bg-sky-100 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800/40">
                       NEW
                     </span>
                   )}
@@ -113,7 +113,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }) {
         {!isCollapsed ? (
           <div className="text-[11px] text-slate-500 flex items-center justify-between font-mono">
             <span>DevLens v1.0.0</span>
-            <span className="text-slate-400">Ready</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">● Ready</span>
           </div>
         ) : (
           <div className="text-center text-[10px] font-mono text-slate-500">v1.0</div>

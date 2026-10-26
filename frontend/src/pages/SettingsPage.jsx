@@ -54,25 +54,25 @@ export default function SettingsPage() {
     <div className="space-y-6 max-w-4xl mx-auto pb-12">
       {/* Title */}
       <div>
-        <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight">
+        <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
           System & API Settings
         </h2>
-        <p className="text-xs md:text-sm text-zinc-400">
+        <p className="text-xs md:text-sm text-slate-500 dark:text-zinc-400">
           Configure AI provider credentials, GitHub tokens, and view system status.
         </p>
       </div>
 
       {/* Backend Status Banner */}
-      <div className="bg-surface-900 border border-surface-750 rounded-2xl p-5 shadow-sm">
+      <div className="bg-surface-900 border border-surface-750 rounded-3xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <div className="flex items-center gap-2">
-            <Server className="w-4 h-4 text-zinc-400" />
-            <h3 className="text-sm font-bold text-white">Live Backend Status</h3>
+            <Server className="w-4 h-4 text-sky-500" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Live Backend Status</h3>
           </div>
           <button
             onClick={handleTestConnection}
             disabled={isTesting}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium text-zinc-300 hover:text-white bg-surface-800 hover:bg-surface-750 border border-surface-700 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-zinc-300 hover:text-slate-900 dark:hover:text-white bg-surface-800 hover:bg-surface-750 border border-surface-750 transition-colors"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isTesting ? 'animate-spin' : ''}`} />
             <span>Test Connection & Refresh</span>
@@ -219,7 +219,7 @@ export default function SettingsPage() {
               <button
                 type="submit"
                 id="save-settings-button"
-                className="px-5 py-2 rounded-xl text-xs font-medium text-zinc-950 bg-white hover:bg-zinc-200 transition-colors"
+                className="px-6 py-2.5 rounded-2xl text-xs font-bold text-white bg-sky-600 hover:bg-sky-500 shadow-md shadow-sky-600/20 transition-all"
               >
                 Save Session Keys
               </button>

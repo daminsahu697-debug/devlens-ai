@@ -78,26 +78,26 @@ export default function CodebaseChatDrawer() {
     return (
       <button
         onClick={toggleChatDrawer}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-200 text-black font-semibold text-xs shadow-xl transition-all hover:scale-105"
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold text-xs shadow-xl shadow-sky-600/30 border border-sky-400/40 transition-all hover:scale-105"
         title="Open Codebase AI Assistant"
       >
-        <Sparkles className="w-4 h-4 text-black" />
+        <Sparkles className="w-4 h-4 text-white" />
         <span>Ask Codebase</span>
       </button>
     );
   }
 
   return (
-    <div className="fixed inset-y-0 right-0 z-50 w-full sm:w-[440px] bg-surface-900 border-l border-surface-700 shadow-2xl flex flex-col backdrop-blur-xl animate-in slide-in-from-right duration-200">
+    <div className="fixed inset-y-0 right-0 z-50 w-full sm:w-[440px] bg-surface-900 border-l border-surface-750 shadow-2xl flex flex-col backdrop-blur-xl animate-in slide-in-from-right duration-200">
       {/* Drawer Header */}
-      <div className="h-16 px-5 border-b border-surface-700/80 flex items-center justify-between bg-surface-950/60">
+      <div className="h-16 px-5 border-b border-surface-750 flex items-center justify-between bg-surface-900">
         <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-8 h-8 rounded-lg bg-surface-800 border border-surface-700 flex items-center justify-center text-slate-300 shrink-0">
+          <div className="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/60 border border-sky-200 dark:border-sky-800 flex items-center justify-center text-sky-600 shrink-0">
             <MessageSquareCode className="w-4 h-4" />
           </div>
           <div className="min-w-0">
-            <h3 className="text-sm font-bold text-white truncate">AI Codebase Assistant</h3>
-            <p className="text-[10px] text-slate-400 truncate">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate">AI Codebase Assistant</h3>
+            <p className="text-[10px] text-slate-500 truncate">
               {currentRepo ? currentRepo.fullName : 'No active repository'}
             </p>
           </div>
@@ -244,7 +244,7 @@ export default function CodebaseChatDrawer() {
           <button
             type="submit"
             disabled={!inputText.trim() || isAsking || !currentRepo}
-            className="p-2 rounded-xl bg-white hover:bg-slate-200 text-black transition-colors disabled:opacity-40 shadow-sm"
+            className="p-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white transition-colors disabled:opacity-40 shadow-sm"
           >
             <Send className="w-4 h-4" />
           </button>

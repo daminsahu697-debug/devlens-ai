@@ -168,21 +168,21 @@ export default function DoctorCheckupPage() {
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="p-6 rounded-2xl bg-surface-900 border border-surface-750">
+      <div className="p-6 md:p-8 rounded-3xl bg-surface-900 border border-surface-750 shadow-sm">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-slate-400 font-semibold text-xs tracking-wider uppercase font-mono">
-              <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 font-semibold text-xs tracking-wider uppercase font-mono">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
               <span>Code Health & Security Audit</span>
-              <span className="px-2 py-0.5 rounded-md bg-surface-800 text-slate-300 font-mono text-[10px] border border-surface-700">
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-mono text-[10px] font-bold border border-emerald-200 dark:border-emerald-800">
                 Doctor Checkup
               </span>
             </div>
-            <h1 className="text-xl font-bold text-white mt-1">
+            <h1 className="text-xl md:text-2xl font-extrabold text-slate-900 dark:text-white mt-1 tracking-tight">
               Code Health & Vulnerability Assessment
             </h1>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Target: <span className="text-white font-mono font-semibold">{currentRepo.fullName}</span> • Branch <span className="text-slate-300 font-mono">{currentRepo.defaultBranch}</span>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Target: <span className="text-slate-900 dark:text-white font-mono font-bold">{currentRepo.fullName}</span> • Branch <span className="text-slate-600 dark:text-slate-300 font-mono">{currentRepo.defaultBranch}</span>
             </p>
           </div>
 
@@ -190,7 +190,7 @@ export default function DoctorCheckupPage() {
             <button
               onClick={() => requestAudit(true)}
               disabled={isAuditLoading}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-surface-800 hover:bg-surface-750 border border-surface-700 text-white text-xs font-medium transition-colors disabled:opacity-50 shadow-sm"
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-all shadow-md shadow-emerald-600/20 disabled:opacity-50"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isAuditLoading ? 'animate-spin' : ''}`} />
               <span>{isAuditLoading ? 'Running Scan...' : 'Re-run Audit'}</span>
@@ -391,21 +391,21 @@ export default function DoctorCheckupPage() {
                         )}
                       </div>
 
-                      <h3 className="font-bold text-sm text-white mt-1 break-words">
+                      <h3 className="font-bold text-sm text-slate-900 dark:text-white mt-1 break-words">
                         {finding.title}
                       </h3>
 
-                      <div className="flex items-center gap-2 text-xs text-slate-400 mt-1 font-mono">
+                      <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mt-1 font-mono">
                         <button
                           onClick={() => handleOpenSourceViewer(finding.filePath, finding.startLine, finding.endLine)}
-                          className="text-slate-300 hover:text-white underline underline-offset-2 flex items-center gap-1"
+                          className="text-sky-600 dark:text-sky-400 hover:underline flex items-center gap-1 font-semibold"
                           title="View in source code viewer"
                         >
                           <FileCode className="w-3.5 h-3.5" />
                           <span>{finding.filePath}:{finding.startLine}</span>
                         </button>
                         <span>•</span>
-                        <span className="text-slate-500">{finding.category}</span>
+                        <span className="text-slate-400">{finding.category}</span>
                       </div>
                     </div>
                   </div>
@@ -413,15 +413,15 @@ export default function DoctorCheckupPage() {
                   <div className="flex items-center gap-2 shrink-0">
                     <button
                       onClick={() => handleGenerateFix(finding)}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-surface-800 hover:bg-surface-750 text-white border border-surface-700 text-xs font-medium transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 text-xs font-semibold hover:bg-sky-100 transition-colors shadow-sm"
                     >
-                      <Sparkles className="w-3.5 h-3.5 text-slate-400" />
+                      <Sparkles className="w-3.5 h-3.5 text-sky-500" />
                       <span>Generate Fix</span>
                     </button>
 
                     <button
                       onClick={() => setExpandedFindingId(isExpanded ? null : finding.id)}
-                      className="px-3 py-1.5 rounded-xl bg-surface-800 hover:bg-surface-750 text-slate-300 hover:text-white text-xs font-medium border border-surface-700"
+                      className="px-3 py-1.5 rounded-xl bg-surface-800 hover:bg-surface-750 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-medium border border-surface-750"
                     >
                       {isExpanded ? 'Collapse' : 'Inspect'}
                     </button>

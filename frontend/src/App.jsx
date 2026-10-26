@@ -62,7 +62,7 @@ function AppLayout() {
   const meta = getPageMeta();
 
   return (
-    <div className="min-h-screen bg-surface-950 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-surface-950 text-slate-800 dark:text-slate-100 flex flex-col transition-colors duration-200">
       {/* Mobile Drawer Backdrop */}
       {isMobileSidebarOpen && (
         <div
@@ -106,7 +106,7 @@ function AppLayout() {
         {/* Global Dockable / Floating Codebase Assistant */}
         <CodebaseChatDrawer />
 
-        <footer className="py-4 px-8 border-t border-surface-700/60 bg-surface-900/40 text-center text-xs text-slate-500">
+        <footer className="py-4 px-8 border-t border-surface-750 bg-surface-900 text-center text-xs text-slate-500 font-medium">
           DevLens AI — AI-Powered GitHub Repository Analyzer • Architecture X-Ray • Doctor Checkup • Instant Onboarding
         </footer>
       </div>

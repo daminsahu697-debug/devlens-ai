@@ -15,8 +15,8 @@ export default function AnalyzerPage() {
     return (
       <div className="space-y-6 max-w-5xl mx-auto">
         <div className="space-y-2">
-          <h2 className="text-xl md:text-2xl font-bold text-white">Repository Analyzer</h2>
-          <p className="text-xs md:text-sm text-zinc-400">
+          <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">Repository Analyzer</h2>
+          <p className="text-xs md:text-sm text-slate-500 dark:text-zinc-400">
             Enter a public repository URL to explore source files and inspect syntax.
           </p>
           <div className="pt-2">
@@ -33,10 +33,10 @@ export default function AnalyzerPage() {
       {/* Workspace Header & Tabs */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-surface-900 border border-surface-750 rounded-2xl p-3.5 shadow-sm">
         <div className="flex items-center gap-2">
-          <Layers className="w-4 h-4 text-zinc-400 shrink-0" />
+          <Layers className="w-4 h-4 text-sky-500 shrink-0" />
           <div>
-            <h2 className="text-sm font-bold text-white flex items-center gap-2 font-mono">
-              <span className="text-zinc-400 font-sans font-normal">Target:</span>
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2 font-mono">
+              <span className="text-slate-500 font-sans font-normal">Target:</span>
               <span>{currentRepo.fullName}</span>
             </h2>
           </div>

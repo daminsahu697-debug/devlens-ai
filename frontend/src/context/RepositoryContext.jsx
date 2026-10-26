@@ -91,6 +91,36 @@ export function RepositoryProvider({ children }) {
     }
   });
 
+  // Theme state ('light' by default, persisted in localStorage)
+  const [theme, setTheme] = useState(() => {
+    try {
+      const saved = localStorage.getItem('devlens_theme');
+      return saved === 'dark' ? 'dark' : 'light';
+    } catch {
+      return 'light';
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('devlens_theme', theme);
+    } catch {
+      // ignore
+    }
+    const root = document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+      root.classList.remove('light');
+    } else {
+      root.classList.add('light');
+      root.classList.remove('dark');
+    }
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
   // Recent analysis history (Persisted in localStorage)
   const [history, setHistory] = useState(() => {
     try {
@@ -445,7 +475,10 @@ export function RepositoryProvider({ children }) {
         setIsChatDrawerOpen,
         updateSessionKeys,
         clearActiveRepo,
-        refreshStatus
+        refreshStatus,
+        theme,
+        setTheme,
+        toggleTheme
       }}
     >
       {children}
