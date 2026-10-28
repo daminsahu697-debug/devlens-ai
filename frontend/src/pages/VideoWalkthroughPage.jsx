@@ -28,7 +28,9 @@ import {
   Palette,
   Sliders,
   BookOpen,
-  Zap
+  Zap,
+  Moon,
+  Sun
 } from 'lucide-react';
 import { useRepository } from '../context/RepositoryContext';
 import VideoPlayer from '../components/VideoPlayer';
@@ -52,7 +54,9 @@ export default function VideoWalkthroughPage() {
     requestVideoScript,
     analyze,
     accentColor,
-    setAccentColor
+    setAccentColor,
+    theme,
+    setTheme
   } = useRepository();
 
   const navigate = useNavigate();
@@ -182,12 +186,14 @@ export default function VideoWalkthroughPage() {
           })}
         </div>
 
-        {/* Right: Color Palette Bar */}
+        {/* Right: Color Palette Bar with Dark Theme option */}
         <div className="flex items-center gap-2 flex-wrap">
           <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 font-semibold mr-1">
             <Palette className="w-4 h-4 text-sky-500" />
             <span>Color Palette:</span>
           </div>
+
+          {/* Color Palettes */}
           {COLOR_PALETTES.map((p) => {
             const isSelected = accentColor === p.id;
             return (
@@ -206,6 +212,21 @@ export default function VideoWalkthroughPage() {
               </button>
             );
           })}
+
+          {/* Dark Theme Option */}
+          <button
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold transition-all border ${
+              theme === 'dark'
+                ? 'bg-slate-900 text-amber-300 border-amber-400/60 shadow-sm ring-1 ring-amber-400/40'
+                : 'bg-surface-800 hover:bg-surface-750 text-slate-700 dark:text-slate-300 border-surface-750'
+            }`}
+            title={theme === 'dark' ? 'Dark Theme is active (click to switch to light mode)' : 'Switch to Dark Theme'}
+          >
+            <Moon className={`w-3.5 h-3.5 ${theme === 'dark' ? 'text-amber-300 fill-amber-300' : 'text-slate-500'}`} />
+            <span>Dark Theme</span>
+            {theme === 'dark' && <span className="text-[10px] text-amber-400 font-mono font-bold ml-0.5">✓</span>}
+          </button>
         </div>
       </div>
 

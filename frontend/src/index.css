@@ -158,6 +158,16 @@ html[data-accent="amber"] {
   color: #94a3b8 !important;
 }
 
+/* Video Player Cinema Controls High-Contrast Enforcement */
+.cinema-stage select,
+.cinema-stage select option {
+  background-color: #0f172a !important;
+  color: #ffffff !important;
+}
+.cinema-stage button {
+  color: #f8fafc;
+}
+
 /* Custom clean scrollbars */
 ::-webkit-scrollbar {
   width: 6px;

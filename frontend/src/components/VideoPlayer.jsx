@@ -781,12 +781,12 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
         </div>
 
         {/* Action Controls Row */}
-        <div className="flex items-center justify-between gap-3 text-xs text-slate-300">
+        <div className="flex items-center justify-between gap-3 text-xs text-slate-200">
           {/* Left: Playback controls */}
           <div className="flex items-center gap-2">
             <button
               onClick={prevChapter}
-              className="p-1.5 rounded-lg hover:bg-surface-800 text-slate-300 hover:text-white transition-colors"
+              className="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white border border-slate-700/80 transition-all shadow-sm"
               title="Previous Chapter"
             >
               <SkipBack className="w-4 h-4" />
@@ -794,7 +794,7 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
 
             <button
               onClick={togglePlay}
-              className="p-2.5 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 text-white shadow-md hover:scale-105 active:scale-95 transition-all"
+              className="p-2.5 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 text-white shadow-lg shadow-sky-600/30 hover:scale-105 active:scale-95 transition-all border border-white/20"
               title={isPlaying ? 'Pause' : 'Play Video'}
             >
               {isPlaying ? <Pause className="w-4 h-4 fill-white" /> : <Play className="w-4 h-4 fill-white ml-0.5" />}
@@ -802,32 +802,32 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
 
             <button
               onClick={nextChapter}
-              className="p-1.5 rounded-lg hover:bg-surface-800 text-slate-300 hover:text-white transition-colors"
+              className="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white border border-slate-700/80 transition-all shadow-sm"
               title="Next Chapter"
             >
               <SkipForward className="w-4 h-4" />
             </button>
 
             {/* Time Indicator */}
-            <span className="font-mono text-[11px] text-slate-400 ml-1">
+            <span className="font-mono text-xs font-bold text-white px-2.5 py-1 rounded-lg bg-slate-900/90 border border-slate-800 ml-1">
               {formatTime(getElapsedSeconds())} / {formatTime(totalDuration)}
             </span>
           </div>
 
           {/* Right: Audio, Voice, Speed & Fullscreen */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-2.5">
             {/* Speed Selector */}
             <select
               value={playbackSpeed}
               onChange={(e) => setPlaybackSpeed(parseFloat(e.target.value))}
-              className="px-2 py-1 rounded-lg bg-surface-800 text-slate-200 border border-surface-700 font-mono text-[11px] cursor-pointer"
+              className="px-2.5 py-1.5 rounded-xl bg-slate-900/95 hover:bg-slate-800 text-white border border-slate-700 font-mono text-xs font-bold cursor-pointer transition-all shadow-sm focus:outline-none focus:border-sky-500"
               title="Playback Speed"
             >
-              <option value="0.75">0.75x</option>
-              <option value="1.0">1.0x</option>
-              <option value="1.25">1.25x</option>
-              <option value="1.5">1.5x</option>
-              <option value="2.0">2.0x</option>
+              <option value="0.75" className="bg-[#0f172a] text-white font-mono">0.75x</option>
+              <option value="1.0" className="bg-[#0f172a] text-white font-mono">1.0x</option>
+              <option value="1.25" className="bg-[#0f172a] text-white font-mono">1.25x</option>
+              <option value="1.5" className="bg-[#0f172a] text-white font-mono">1.5x</option>
+              <option value="2.0" className="bg-[#0f172a] text-white font-mono">2.0x</option>
             </select>
 
             {/* Ambient Synth Music Toggle */}
@@ -838,21 +838,25 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
                 if (next && isPlaying) startAmbientSynth();
                 else stopAmbientSynth();
               }}
-              className={`p-1.5 rounded-lg transition-colors ${
+              className={`p-2 rounded-xl transition-all shadow-sm border ${
                 musicEnabled
-                  ? 'text-indigo-400 bg-indigo-500/20'
-                  : 'text-slate-500 hover:bg-surface-800'
+                  ? 'text-indigo-300 bg-indigo-950/80 border-indigo-600/60 ring-1 ring-indigo-500/30'
+                  : 'text-slate-400 bg-slate-900/90 hover:bg-slate-800 border-slate-700/80 hover:text-white'
               }`}
               title={musicEnabled ? 'Ambient Music: ON' : 'Ambient Music: OFF'}
             >
-              <Music className="w-3.5 h-3.5" />
+              <Music className="w-4 h-4" />
             </button>
 
             {/* Voice Mute / Unmute */}
             <button
               onClick={() => setIsMuted(!isMuted)}
-              className="p-1.5 rounded-lg hover:bg-surface-800 text-slate-300 hover:text-white transition-colors"
-              title={isMuted ? 'Unmute' : 'Mute'}
+              className={`p-2 rounded-xl transition-all shadow-sm border ${
+                isMuted
+                  ? 'text-rose-300 bg-rose-950/80 border-rose-600/60 ring-1 ring-rose-500/30'
+                  : 'text-slate-200 bg-slate-900/90 hover:bg-slate-800 border-slate-700/80 hover:text-white'
+              }`}
+              title={isMuted ? 'Unmute Voiceover' : 'Mute Voiceover'}
             >
               {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4" />}
             </button>
@@ -860,31 +864,35 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
             {/* Captions Toggle */}
             <button
               onClick={() => setCaptionsEnabled(!captionsEnabled)}
-              className={`p-1.5 rounded-lg transition-colors ${
+              className={`p-2 rounded-xl transition-all shadow-sm border ${
                 captionsEnabled
-                  ? 'text-sky-400 bg-sky-500/20'
-                  : 'text-slate-500 hover:bg-surface-800'
+                  ? 'text-sky-300 bg-sky-950/80 border-sky-600/60 ring-1 ring-sky-500/30'
+                  : 'text-slate-400 bg-slate-900/90 hover:bg-slate-800 border-slate-700/80 hover:text-white'
               }`}
               title={captionsEnabled ? 'Subtitles ON' : 'Subtitles OFF'}
             >
               <Subtitles className="w-4 h-4" />
             </button>
 
-            {/* Video Download */}
+            {/* Video Download / Export */}
             <button
               onClick={downloadVideo}
               disabled={isRecording}
-              className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-800 hover:bg-surface-750 text-slate-200 border border-surface-700 text-[11px] font-semibold transition-colors"
-              title="Download WebM Video"
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-md border ${
+                isRecording
+                  ? 'bg-rose-600 text-white border-rose-500 animate-pulse'
+                  : 'bg-slate-900/95 hover:bg-slate-800 text-white hover:text-white border-slate-700 hover:border-sky-400/80 hover:scale-[1.02] active:scale-95'
+              }`}
+              title="Download Video Walkthrough (.webm)"
             >
-              <Download className="w-3 h-3 text-sky-400" />
-              <span>{isRecording ? 'Recording...' : 'Export'}</span>
+              <Download className="w-3.5 h-3.5 text-sky-400 shrink-0" />
+              <span className="text-white font-bold">{isRecording ? 'Recording...' : 'Export'}</span>
             </button>
 
             {/* Fullscreen */}
             <button
               onClick={toggleFullscreen}
-              className="p-1.5 rounded-lg hover:bg-surface-800 text-slate-300 hover:text-white transition-colors"
+              className="p-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 text-slate-200 hover:text-white border border-slate-700/80 transition-all shadow-sm"
               title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
             >
               {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}

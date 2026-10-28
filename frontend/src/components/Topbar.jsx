@@ -97,38 +97,72 @@ export default function Topbar({ onToggleMobileSidebar, pageTitle }) {
           </button>
 
           {isPaletteOpen && (
-            <div className="absolute right-0 mt-2 w-48 p-2 rounded-2xl bg-surface-900 border border-surface-750 shadow-xl z-50 space-y-1">
-              <div className="px-2 py-1 text-[10px] font-mono uppercase text-slate-400 font-bold border-b border-surface-750 mb-1">
-                UI Color Palette
+            <div className="absolute right-0 mt-2 w-52 p-2 rounded-2xl bg-surface-900 border border-surface-750 shadow-xl z-50 space-y-2">
+              {/* Theme Mode Segment */}
+              <div>
+                <div className="px-2 py-0.5 text-[10px] font-mono uppercase text-slate-400 font-bold border-b border-surface-750 mb-1.5 flex items-center justify-between">
+                  <span>Theme Mode</span>
+                </div>
+                <div className="grid grid-cols-2 gap-1.5 px-0.5">
+                  <button
+                    onClick={() => setTheme('light')}
+                    className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+                      theme === 'light'
+                        ? 'bg-sky-50 dark:bg-surface-800 text-sky-700 dark:text-sky-300 border-sky-300 dark:border-sky-700 font-bold shadow-sm'
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-surface-800 border-surface-750'
+                    }`}
+                  >
+                    <Sun className="w-3.5 h-3.5 text-amber-500" />
+                    <span>Light</span>
+                  </button>
+                  <button
+                    onClick={() => setTheme('dark')}
+                    className={`flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-xl text-xs font-semibold transition-all border ${
+                      theme === 'dark'
+                        ? 'bg-slate-900 text-amber-300 border-amber-400/60 font-bold shadow-sm ring-1 ring-amber-400/30'
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-surface-800 border-surface-750'
+                    }`}
+                  >
+                    <Moon className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                    <span>Dark</span>
+                  </button>
+                </div>
               </div>
-              {[
-                { id: 'sky', label: 'Ocean Sky', color: 'bg-[#0ea5e9]', hex: '#0ea5e9' },
-                { id: 'emerald', label: 'Emerald Mint', color: 'bg-[#10b981]', hex: '#10b981' },
-                { id: 'violet', label: 'Electric Violet', color: 'bg-[#8b5cf6]', hex: '#8b5cf6' },
-                { id: 'rose', label: 'Sunset Rose', color: 'bg-[#f43f5e]', hex: '#f43f5e' },
-                { id: 'amber', label: 'Solar Amber', color: 'bg-[#f59e0b]', hex: '#f59e0b' },
-              ].map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => {
-                    setAccentColor(p.id);
-                    setIsPaletteOpen(false);
-                  }}
-                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                    accentColor === p.id
-                      ? 'bg-sky-50 dark:bg-surface-800 text-slate-900 dark:text-white font-bold'
-                      : 'text-slate-600 dark:text-slate-400 hover:bg-surface-800'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className={`w-3 h-3 rounded-full ${p.color}`} />
-                    <span>{p.label}</span>
-                  </div>
-                  {accentColor === p.id && (
-                    <span className="text-[10px] text-sky-600 dark:text-sky-400 font-mono font-bold">✓</span>
-                  )}
-                </button>
-              ))}
+
+              {/* Accent Color Palette Segment */}
+              <div>
+                <div className="px-2 py-0.5 text-[10px] font-mono uppercase text-slate-400 font-bold border-b border-surface-750 mb-1">
+                  Color Palette
+                </div>
+                {[
+                  { id: 'sky', label: 'Ocean Sky', color: 'bg-[#0ea5e9]', hex: '#0ea5e9' },
+                  { id: 'emerald', label: 'Emerald Mint', color: 'bg-[#10b981]', hex: '#10b981' },
+                  { id: 'violet', label: 'Electric Violet', color: 'bg-[#8b5cf6]', hex: '#8b5cf6' },
+                  { id: 'rose', label: 'Sunset Rose', color: 'bg-[#f43f5e]', hex: '#f43f5e' },
+                  { id: 'amber', label: 'Solar Amber', color: 'bg-[#f59e0b]', hex: '#f59e0b' },
+                ].map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => {
+                      setAccentColor(p.id);
+                      setIsPaletteOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                      accentColor === p.id
+                        ? 'bg-sky-50 dark:bg-surface-800 text-sky-700 dark:text-sky-300 font-bold'
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-surface-800'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className={`w-3 h-3 rounded-full ${p.color}`} />
+                      <span>{p.label}</span>
+                    </div>
+                    {accentColor === p.id && (
+                      <span className="text-[10px] text-sky-600 dark:text-sky-400 font-mono font-bold">✓</span>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
