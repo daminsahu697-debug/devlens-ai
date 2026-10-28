@@ -84,14 +84,14 @@ export default function Topbar({ onToggleMobileSidebar, pageTitle }) {
             <span
               className={`w-2.5 h-2.5 rounded-full ${
                 accentColor === 'emerald'
-                  ? 'bg-emerald-500'
+                  ? 'bg-[#10b981]'
                   : accentColor === 'violet'
-                  ? 'bg-violet-500'
+                  ? 'bg-[#8b5cf6]'
                   : accentColor === 'rose'
-                  ? 'bg-rose-500'
+                  ? 'bg-[#f43f5e]'
                   : accentColor === 'amber'
-                  ? 'bg-amber-500'
-                  : 'bg-sky-500'
+                  ? 'bg-[#f59e0b]'
+                  : 'bg-[#0ea5e9]'
               }`}
             />
           </button>
@@ -102,11 +102,11 @@ export default function Topbar({ onToggleMobileSidebar, pageTitle }) {
                 UI Color Palette
               </div>
               {[
-                { id: 'sky', label: 'Ocean Sky', color: 'bg-sky-500', hex: '#0284c7' },
-                { id: 'emerald', label: 'Emerald Mint', color: 'bg-emerald-500', hex: '#059669' },
-                { id: 'violet', label: 'Electric Violet', color: 'bg-violet-500', hex: '#7c3aed' },
-                { id: 'rose', label: 'Sunset Rose', color: 'bg-rose-500', hex: '#e11d48' },
-                { id: 'amber', label: 'Solar Amber', color: 'bg-amber-500', hex: '#d97706' },
+                { id: 'sky', label: 'Ocean Sky', color: 'bg-[#0ea5e9]', hex: '#0ea5e9' },
+                { id: 'emerald', label: 'Emerald Mint', color: 'bg-[#10b981]', hex: '#10b981' },
+                { id: 'violet', label: 'Electric Violet', color: 'bg-[#8b5cf6]', hex: '#8b5cf6' },
+                { id: 'rose', label: 'Sunset Rose', color: 'bg-[#f43f5e]', hex: '#f43f5e' },
+                { id: 'amber', label: 'Solar Amber', color: 'bg-[#f59e0b]', hex: '#f59e0b' },
               ].map((p) => (
                 <button
                   key={p.id}

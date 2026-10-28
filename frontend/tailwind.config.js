@@ -1,3 +1,12 @@
+function withOpacity(variableName) {
+  return ({ opacityValue }) => {
+    if (opacityValue !== undefined) {
+      return `rgba(var(${variableName}), ${opacityValue})`;
+    }
+    return `rgb(var(${variableName}))`;
+  };
+}
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -16,6 +25,19 @@ export default {
           750: 'var(--surface-750)', // Subtle border: #e2e8f0 (light) / #27272a (dark)
           700: 'var(--surface-700)', // Border highlight: #cbd5e1 (light) / #323238 (dark)
           600: 'var(--surface-600)', // Active border: #94a3b8 (light) / #3f3f46 (dark)
+        },
+        sky: {
+          50: withOpacity('--palette-50'),
+          100: withOpacity('--palette-100'),
+          200: withOpacity('--palette-200'),
+          300: withOpacity('--palette-300'),
+          400: withOpacity('--palette-400'),
+          500: withOpacity('--palette-500'),
+          600: withOpacity('--palette-600'),
+          700: withOpacity('--palette-700'),
+          800: withOpacity('--palette-800'),
+          900: withOpacity('--palette-900'),
+          950: withOpacity('--palette-950'),
         },
         accent: {
           blue: '#0284c7',
