@@ -156,11 +156,11 @@ export async function sendCodebaseChat(repoUrl, question, history, sessionKeys) 
 /**
  * Fetches AI Video Walkthrough Presentation and Narration Script.
  */
-export async function fetchVideoScript(repoUrl, sessionKeys) {
+export async function fetchVideoScript(repoUrl, sessionKeys, narrationMode = 'simple') {
   const response = await fetch(`${API_BASE}/repository/video/script`, {
     method: 'POST',
     headers: buildHeaders(sessionKeys),
-    body: JSON.stringify({ repoUrl })
+    body: JSON.stringify({ repoUrl, narrationMode })
   });
   return handleResponse(response);
 }

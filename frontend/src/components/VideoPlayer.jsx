@@ -382,16 +382,16 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
   return (
     <div
       ref={playerContainerRef}
-      className={`relative w-full rounded-3xl overflow-hidden shadow-2xl border border-surface-700 bg-surface-950 flex flex-col ${
-        isFullscreen ? 'h-screen rounded-none' : 'aspect-video min-h-[420px]'
+      className={`cinema-stage relative w-full rounded-3xl overflow-hidden shadow-2xl border border-slate-800 bg-[#070b14] text-white flex flex-col ${
+        isFullscreen ? 'h-screen rounded-none' : 'aspect-video min-h-[440px]'
       }`}
     >
       {/* Visual Presentation Screen */}
-      <div className="relative flex-1 w-full h-full overflow-hidden flex flex-col justify-between p-6 md:p-10 select-none">
+      <div className="relative flex-1 w-full h-full overflow-hidden flex flex-col justify-between p-6 md:p-10 select-none bg-gradient-to-b from-[#090e1c] via-[#070b14] to-[#050810]">
         {/* Animated Background Gradients based on theme */}
         <div className="absolute inset-0 pointer-events-none opacity-40">
-          <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-gradient-to-br from-sky-500/20 to-indigo-500/10 blur-3xl animate-pulse" />
-          <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-gradient-to-tl from-violet-500/20 to-rose-500/10 blur-3xl animate-pulse" />
+          <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-gradient-to-br from-sky-500/25 to-indigo-500/15 blur-3xl animate-pulse" />
+          <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-gradient-to-tl from-violet-500/25 to-rose-500/15 blur-3xl animate-pulse" />
         </div>
 
         {/* Top Header Row of Video Screen */}
@@ -412,7 +412,7 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
 
           {/* Chapter Badge */}
           <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-full bg-surface-900/90 text-white font-mono text-xs font-bold border border-surface-700 backdrop-blur-md shadow-sm">
+            <span className="px-3 py-1 rounded-full bg-slate-900/90 text-white font-mono text-xs font-bold border border-slate-700 backdrop-blur-md shadow-sm">
               Chapter {currentChapterIdx + 1} of {chapters.length}
             </span>
             {isRecording && (
@@ -429,13 +429,13 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
             <div className="transition-all duration-300">
               {/* Slide Headline */}
               <div className="text-center md:text-left mb-6">
-                <span className="text-xs font-mono font-semibold text-sky-400 uppercase tracking-widest">
+                <span className="text-xs font-mono font-bold text-sky-400 uppercase tracking-widest">
                   {currentChapter.subtitle}
                 </span>
-                <h3 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight mt-1">
+                <h3 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight mt-1 drop-shadow-sm">
                   {currentChapter.visual?.headline || currentChapter.title}
                 </h3>
-                <p className="text-xs md:text-sm text-slate-300 mt-2 max-w-2xl">
+                <p className="text-xs md:text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed">
                   {currentChapter.visual?.tagline}
                 </p>
               </div>
@@ -447,7 +447,7 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
                     {currentChapter.visual.badges?.map((badge, idx) => (
                       <div
                         key={idx}
-                        className="p-3.5 rounded-2xl bg-surface-900/80 border border-surface-750 backdrop-blur-md shadow-sm"
+                        className="p-3.5 rounded-2xl bg-[#111827]/90 border border-slate-700/80 backdrop-blur-md shadow-md"
                       >
                         <span className="text-[10px] font-mono text-slate-400 uppercase font-semibold block">
                           {badge.label}
@@ -459,11 +459,11 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
                     ))}
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-surface-900/60 border border-surface-750 backdrop-blur-sm space-y-1.5">
+                  <div className="p-4 rounded-2xl bg-[#111827]/80 border border-slate-700/80 backdrop-blur-sm space-y-1.5">
                     {currentChapter.visual.highlights?.map((hl, idx) => (
                       <div key={idx} className="flex items-center gap-2 text-xs text-slate-200">
                         <CheckCircle className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                        <span>{hl}</span>
+                        <span className="font-medium text-slate-100">{hl}</span>
                       </div>
                     ))}
                   </div>
@@ -476,9 +476,9 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
                   {currentChapter.visual.stackItems?.map((item, idx) => (
                     <div
                       key={idx}
-                      className="p-4 rounded-2xl bg-surface-900/80 border border-surface-750 backdrop-blur-md hover:border-indigo-500/50 transition-colors"
+                      className="p-4 rounded-2xl bg-[#111827]/90 border border-slate-700/80 backdrop-blur-md hover:border-indigo-400/60 transition-colors shadow-md"
                     >
-                      <span className="text-[10px] font-mono text-indigo-400 uppercase font-semibold block">
+                      <span className="text-[10px] font-mono text-indigo-300 uppercase font-bold block">
                         {item.layer}
                       </span>
                       <span className="text-sm font-bold text-white mt-1 block truncate">
@@ -492,29 +492,29 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
               {/* Layout 3: Modular File Tree */}
               {currentChapter.visual?.layout === 'tree' && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 rounded-2xl bg-surface-900/80 border border-surface-750 backdrop-blur-md">
-                    <span className="text-[10px] font-mono text-violet-400 uppercase font-semibold block mb-2">
-                      Core Subsystems & Directories
+                  <div className="p-4 rounded-2xl bg-[#111827]/90 border border-slate-700/80 backdrop-blur-md shadow-md">
+                    <span className="text-[10px] font-mono text-violet-300 uppercase font-bold block mb-2">
+                      Core Subsystems & Folders
                     </span>
                     <div className="space-y-1.5">
                       {currentChapter.visual.directories?.map((dir, idx) => (
                         <div key={idx} className="flex items-center gap-2 text-xs text-slate-200 font-mono">
                           <Layers className="w-3.5 h-3.5 text-violet-400 shrink-0" />
-                          <span>{dir.name}/</span>
+                          <span className="text-white font-medium">{dir.name}/</span>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-surface-900/80 border border-surface-750 backdrop-blur-md">
-                    <span className="text-[10px] font-mono text-sky-400 uppercase font-semibold block mb-2">
-                      Critical Entry Files
+                  <div className="p-4 rounded-2xl bg-[#111827]/90 border border-slate-700/80 backdrop-blur-md shadow-md">
+                    <span className="text-[10px] font-mono text-sky-300 uppercase font-bold block mb-2">
+                      Starting & Entry Files
                     </span>
                     <div className="space-y-1.5">
                       {currentChapter.visual.keyFiles?.map((file, idx) => (
                         <div key={idx} className="flex items-center gap-2 text-xs text-slate-200 font-mono">
                           <Code2 className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-                          <span className="truncate">{file.path}</span>
+                          <span className="truncate text-white font-medium">{file.path}</span>
                         </div>
                       ))}
                     </div>
@@ -528,13 +528,13 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
                   {currentChapter.visual.steps?.map((st) => (
                     <div
                       key={st.step}
-                      className="p-4 rounded-2xl bg-surface-900/80 border border-surface-750 backdrop-blur-md relative"
+                      className="p-4 rounded-2xl bg-[#111827]/90 border border-slate-700/80 backdrop-blur-md relative shadow-md"
                     >
-                      <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 font-mono text-xs font-extrabold flex items-center justify-center mb-2 border border-emerald-500/40">
+                      <div className="w-6 h-6 rounded-full bg-emerald-500/25 text-emerald-300 font-mono text-xs font-extrabold flex items-center justify-center mb-2 border border-emerald-500/50">
                         {st.step}
                       </div>
                       <h5 className="text-xs font-bold text-white mb-1">{st.title}</h5>
-                      <p className="text-[10px] text-slate-300 leading-relaxed">{st.desc}</p>
+                      <p className="text-[11px] text-slate-300 leading-relaxed">{st.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -543,25 +543,25 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
               {/* Layout 5: Security Health */}
               {currentChapter.visual?.layout === 'security' && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="p-5 rounded-2xl bg-surface-900/80 border border-surface-750 backdrop-blur-md flex flex-col items-center justify-center text-center">
+                  <div className="p-5 rounded-2xl bg-[#111827]/90 border border-slate-700/80 backdrop-blur-md flex flex-col items-center justify-center text-center shadow-md">
                     <Shield className="w-10 h-10 text-emerald-400 mb-2" />
                     <span className="text-3xl font-extrabold text-white">92%</span>
-                    <span className="text-[10px] font-mono uppercase text-emerald-400 font-bold mt-1">
+                    <span className="text-[10px] font-mono uppercase text-emerald-300 font-bold mt-1">
                       Doctor Health Grade: A+
                     </span>
                   </div>
 
-                  <div className="md:col-span-2 p-4 rounded-2xl bg-surface-900/80 border border-surface-750 backdrop-blur-md space-y-2">
+                  <div className="md:col-span-2 p-4 rounded-2xl bg-[#111827]/90 border border-slate-700/80 backdrop-blur-md space-y-2 shadow-md">
                     {currentChapter.visual.checks?.map((chk, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center justify-between text-xs p-2 rounded-xl bg-surface-950/60"
+                        className="flex items-center justify-between text-xs p-2.5 rounded-xl bg-[#090d16] border border-slate-800"
                       >
                         <div className="flex items-center gap-2">
                           <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
-                          <span className="text-white font-medium">{chk.name}</span>
+                          <span className="text-white font-semibold">{chk.name}</span>
                         </div>
-                        <span className="font-mono text-[10px] text-slate-400">{chk.detail}</span>
+                        <span className="font-mono text-[10px] text-emerald-300 font-bold">{chk.detail}</span>
                       </div>
                     ))}
                   </div>
@@ -570,15 +570,15 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
 
               {/* Layout 6: Terminal Onboarding */}
               {currentChapter.visual?.layout === 'terminal' && (
-                <div className="p-4 rounded-2xl bg-surface-950/90 border border-surface-750 font-mono text-xs text-slate-300 space-y-2 shadow-inner">
-                  <div className="flex items-center gap-2 pb-2 border-b border-surface-800 text-[10px] text-slate-500">
+                <div className="p-4 rounded-2xl bg-[#090d16] border border-slate-700/80 font-mono text-xs text-slate-200 space-y-2 shadow-inner">
+                  <div className="flex items-center gap-2 pb-2 border-b border-slate-800 text-[10px] text-slate-400">
                     <Terminal className="w-3 h-3 text-amber-400" />
-                    <span>Quickstart Developer Terminal</span>
+                    <span className="font-bold">Quickstart Developer Terminal</span>
                   </div>
                   {currentChapter.visual.commands?.map((cmd, idx) => (
                     <div key={idx} className="space-y-0.5">
-                      <span className="text-[10px] text-slate-500">{cmd.step}</span>
-                      <div className="bg-surface-900/80 px-3 py-1.5 rounded-lg text-emerald-400 text-xs font-semibold select-all">
+                      <span className="text-[10px] text-slate-400">{cmd.step}</span>
+                      <div className="bg-[#111827] px-3 py-1.5 rounded-lg text-emerald-300 text-xs font-semibold select-all border border-slate-800">
                         $ {cmd.cmd}
                       </div>
                     </div>
@@ -596,7 +596,7 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
             {[...Array(24)].map((_, i) => (
               <div
                 key={i}
-                className={`w-1 rounded-full bg-gradient-to-t from-sky-500 to-indigo-400 transition-all duration-150 ${
+                className={`w-1 rounded-full bg-gradient-to-t from-sky-400 to-indigo-300 transition-all duration-150 ${
                   isPlaying && !isMuted ? 'animate-pulse' : 'h-1.5 opacity-30'
                 }`}
                 style={{
@@ -609,8 +609,8 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
 
           {/* Subtitles Overlay */}
           {captionsEnabled && activeCaption && (
-            <div className="text-center px-4 py-2.5 rounded-2xl bg-black/75 backdrop-blur-md border border-white/10 max-w-3xl mx-auto shadow-lg">
-              <p className="text-xs md:text-sm font-medium text-white tracking-wide leading-relaxed">
+            <div className="text-center px-5 py-2.5 rounded-2xl bg-black/90 backdrop-blur-md border border-white/20 max-w-3xl mx-auto shadow-2xl">
+              <p className="text-xs md:text-sm font-semibold text-white tracking-wide leading-relaxed">
                 "{activeCaption}"
               </p>
             </div>
@@ -627,11 +627,11 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
       />
 
       {/* Video Control Bar */}
-      <div className="relative z-20 bg-surface-900/95 border-t border-surface-750 px-4 md:px-6 py-3 flex flex-col gap-2.5 backdrop-blur-md">
+      <div className="relative z-20 bg-[#090e1c] border-t border-slate-800 px-4 md:px-6 py-3 flex flex-col gap-2.5 backdrop-blur-md text-slate-200">
         {/* Scrubber Progress Bar with Chapter Ticks */}
         <div className="relative w-full h-2 group cursor-pointer flex items-center">
           <div
-            className="w-full h-1.5 bg-surface-750 rounded-full overflow-hidden relative"
+            className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden relative"
             onClick={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
               const clickPercent = (e.clientX - rect.left) / rect.width;

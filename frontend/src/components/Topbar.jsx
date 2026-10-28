@@ -1,10 +1,21 @@
-import React from 'react';
-import { Menu, Key, Sparkles, ExternalLink, Sun, Moon } from 'lucide-react';
+import React, { useState } from 'react';
+import { Menu, Key, Sparkles, ExternalLink, Sun, Moon, Palette } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useRepository } from '../context/RepositoryContext';
 
 export default function Topbar({ onToggleMobileSidebar, pageTitle }) {
-  const { currentRepo, systemStatus, sessionKeys, toggleChatDrawer, theme, toggleTheme } = useRepository();
+  const {
+    currentRepo,
+    systemStatus,
+    sessionKeys,
+    toggleChatDrawer,
+    theme,
+    toggleTheme,
+    accentColor,
+    setAccentColor
+  } = useRepository();
+
+  const [isPaletteOpen, setIsPaletteOpen] = useState(false);
 
   const isLlmConfigured = systemStatus?.llmConfigured || Boolean(sessionKeys?.geminiApiKey);
   const remainingRateLimit = systemStatus?.rateLimit?.remaining;
@@ -61,6 +72,66 @@ export default function Topbar({ onToggleMobileSidebar, pageTitle }) {
           <Sparkles className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
           <span className="hidden sm:inline">Ask AI</span>
         </button>
+
+        {/* Color Palette Selector Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setIsPaletteOpen(!isPaletteOpen)}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-surface-800 hover:bg-surface-750 border border-surface-750 text-slate-700 dark:text-slate-300 transition-colors"
+            title="Choose UI Color Palette"
+          >
+            <Palette className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+            <span
+              className={`w-2.5 h-2.5 rounded-full ${
+                accentColor === 'emerald'
+                  ? 'bg-emerald-500'
+                  : accentColor === 'violet'
+                  ? 'bg-violet-500'
+                  : accentColor === 'rose'
+                  ? 'bg-rose-500'
+                  : accentColor === 'amber'
+                  ? 'bg-amber-500'
+                  : 'bg-sky-500'
+              }`}
+            />
+          </button>
+
+          {isPaletteOpen && (
+            <div className="absolute right-0 mt-2 w-48 p-2 rounded-2xl bg-surface-900 border border-surface-750 shadow-xl z-50 space-y-1">
+              <div className="px-2 py-1 text-[10px] font-mono uppercase text-slate-400 font-bold border-b border-surface-750 mb-1">
+                UI Color Palette
+              </div>
+              {[
+                { id: 'sky', label: 'Ocean Sky', color: 'bg-sky-500', hex: '#0284c7' },
+                { id: 'emerald', label: 'Emerald Mint', color: 'bg-emerald-500', hex: '#059669' },
+                { id: 'violet', label: 'Electric Violet', color: 'bg-violet-500', hex: '#7c3aed' },
+                { id: 'rose', label: 'Sunset Rose', color: 'bg-rose-500', hex: '#e11d48' },
+                { id: 'amber', label: 'Solar Amber', color: 'bg-amber-500', hex: '#d97706' },
+              ].map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => {
+                    setAccentColor(p.id);
+                    setIsPaletteOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                    accentColor === p.id
+                      ? 'bg-sky-50 dark:bg-surface-800 text-slate-900 dark:text-white font-bold'
+                      : 'text-slate-600 dark:text-slate-400 hover:bg-surface-800'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className={`w-3 h-3 rounded-full ${p.color}`} />
+                    <span>{p.label}</span>
+                  </div>
+                  {accentColor === p.id && (
+                    <span className="text-[10px] text-sky-600 dark:text-sky-400 font-mono font-bold">✓</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Theme Toggle Button (Light / Dark) */}
         <button

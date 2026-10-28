@@ -107,6 +107,34 @@ export function RepositoryProvider({ children }) {
     }
   });
 
+  // Color Accent Palette ('sky' | 'emerald' | 'violet' | 'rose' | 'amber')
+  const [accentColor, setAccentColorState] = useState(() => {
+    try {
+      const saved = localStorage.getItem('devlens_accent_palette');
+      return ['sky', 'emerald', 'violet', 'rose', 'amber'].includes(saved) ? saved : 'sky';
+    } catch {
+      return 'sky';
+    }
+  });
+
+  const setAccentColor = (color) => {
+    setAccentColorState(color);
+    try {
+      localStorage.setItem('devlens_accent_palette', color);
+    } catch {
+      // ignore
+    }
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-accent', color);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-accent', accentColor);
+    }
+  }, [accentColor]);
+
   useEffect(() => {
     try {
       localStorage.setItem('devlens_theme', theme);
@@ -339,16 +367,16 @@ export function RepositoryProvider({ children }) {
   };
 
   // Request Video Walkthrough Presentation Script
-  const requestVideoScript = async (forceRefresh = false) => {
+  const requestVideoScript = async (forceRefresh = false, narrationMode = 'simple') => {
     if (!currentRepo) return null;
-    if (videoData && !forceRefresh) return videoData;
+    if (videoData && !forceRefresh && videoData.narrationMode === narrationMode) return videoData;
 
     setIsVideoLoading(true);
     setVideoError(null);
 
     try {
       const repoUrl = currentRepoUrl || currentRepo.htmlUrl;
-      const data = await fetchVideoScript(repoUrl, sessionKeys);
+      const data = await fetchVideoScript(repoUrl, sessionKeys, narrationMode);
       setVideoData(data);
       return data;
     } catch (err) {
@@ -513,7 +541,9 @@ export function RepositoryProvider({ children }) {
         refreshStatus,
         theme,
         setTheme,
-        toggleTheme
+        toggleTheme,
+        accentColor,
+        setAccentColor
       }}
     >
       {children}

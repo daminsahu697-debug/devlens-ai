@@ -46,38 +46,72 @@ body {
   overflow-x: hidden;
 }
 
-/* Light Mode Text Legibility Overrides */
-html.light .text-white {
-  color: #0f172a;
+/* Dynamic Accent Color Palette Tokens */
+:root,
+html[data-accent="sky"] {
+  --accent-500: #0284c7;
+  --accent-600: #0369a1;
+  --accent-100: #e0f2fe;
+  --accent-50: #f0f9ff;
+  --accent-text: #0369a1;
+  --accent-glow: rgba(2, 132, 199, 0.25);
 }
-/* Maintain white text on explicitly dark or colored button backgrounds */
-html.light button.bg-black,
-html.light button.bg-slate-900,
-html.light button.bg-slate-800,
-html.light .bg-slate-900 .text-white,
-html.light .bg-slate-800 .text-white,
-html.light [class*="bg-sky-600"],
-html.light [class*="bg-blue-600"],
-html.light [class*="bg-indigo-600"],
-html.light [class*="bg-violet-600"],
-html.light [class*="bg-emerald-600"],
-html.light [class*="bg-rose-600"],
-html.light [class*="bg-amber-600"] {
-  color: #ffffff !important;
+html[data-accent="emerald"] {
+  --accent-500: #059669;
+  --accent-600: #047857;
+  --accent-100: #d1fae5;
+  --accent-50: #ecfdf5;
+  --accent-text: #047857;
+  --accent-glow: rgba(5, 150, 105, 0.25);
+}
+html[data-accent="violet"] {
+  --accent-500: #7c3aed;
+  --accent-600: #6d28d9;
+  --accent-100: #ede9fe;
+  --accent-50: #f5f3ff;
+  --accent-text: #6d28d9;
+  --accent-glow: rgba(124, 58, 237, 0.25);
+}
+html[data-accent="rose"] {
+  --accent-500: #e11d48;
+  --accent-600: #be123c;
+  --accent-100: #ffe4e6;
+  --accent-50: #fff1f2;
+  --accent-text: #be123c;
+  --accent-glow: rgba(225, 29, 72, 0.25);
+}
+html[data-accent="amber"] {
+  --accent-500: #d97706;
+  --accent-600: #b45309;
+  --accent-100: #fef3c7;
+  --accent-50: #fffbeb;
+  --accent-text: #b45309;
+  --accent-glow: rgba(217, 119, 6, 0.25);
 }
 
-/* Light mode text contrast helper */
-html.light .text-slate-400 {
-  color: #64748b;
+/* Cinema Stage & Dark Box Contrast Protection (Always Crisp White & High Contrast) */
+.cinema-stage,
+.cinema-stage *,
+.dark-box,
+.dark-box * {
+  color-scheme: dark;
 }
-html.light .text-slate-300 {
-  color: #475569;
+.cinema-stage .text-white,
+.dark-box .text-white,
+.text-always-white {
+  color: #ffffff !important;
 }
-html.light .text-zinc-400 {
-  color: #64748b;
+.cinema-stage .text-slate-200,
+.dark-box .text-slate-200 {
+  color: #e2e8f0 !important;
 }
-html.light .text-zinc-300 {
-  color: #475569;
+.cinema-stage .text-slate-300,
+.dark-box .text-slate-300 {
+  color: #cbd5e1 !important;
+}
+.cinema-stage .text-slate-400,
+.dark-box .text-slate-400 {
+  color: #94a3b8 !important;
 }
 
 /* Custom clean scrollbars */

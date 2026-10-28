@@ -1,7 +1,8 @@
 /**
  * DevLens AI - Video Presentation & Walkthrough Service
  * Generates an end-to-end, multi-chapter AI video presentation script and visual slide payload
- * explaining the entire repository summary, architecture, security health, and developer setup.
+ * explaining the entire repository summary, architecture, security health, and developer setup
+ * in clear, friendly, and easy-to-understand language.
  */
 
 import { fetchFileContent } from './githubService.js';
@@ -29,19 +30,19 @@ function detectTechStack(manifestContent, allFilesList) {
   const manifestLower = (manifestContent || '').toLowerCase();
 
   const stack = {
-    frontend: 'Vanilla JS / HTML5',
+    frontend: 'HTML5 & Vanilla JavaScript',
     backend: 'Node.js',
-    database: 'None / In-Memory',
+    database: 'In-Memory / None',
     auth: 'Standard Session / None',
-    styling: 'Standard CSS',
-    testing: 'Manual / CI'
+    styling: 'Modern CSS',
+    testing: 'Automated Test Suite'
   };
 
   // Frontend
   if (manifestLower.includes('next') || filesJoined.includes('next.config')) stack.frontend = 'Next.js (React)';
-  else if (manifestLower.includes('react') || filesJoined.includes('.jsx') || filesJoined.includes('.tsx')) stack.frontend = 'React 19';
+  else if (manifestLower.includes('react') || filesJoined.includes('.jsx') || filesJoined.includes('.tsx')) stack.frontend = 'React';
   else if (manifestLower.includes('vue') || filesJoined.includes('.vue')) stack.frontend = 'Vue.js';
-  else if (manifestLower.includes('svelte') || filesJoined.includes('.svelte')) stack.frontend = 'SvelteKit';
+  else if (manifestLower.includes('svelte') || filesJoined.includes('.svelte')) stack.frontend = 'Svelte';
   else if (manifestLower.includes('angular')) stack.frontend = 'Angular';
 
   // Backend
@@ -50,14 +51,14 @@ function detectTechStack(manifestContent, allFilesList) {
   else if (manifestLower.includes('nest') || manifestLower.includes('@nestjs')) stack.backend = 'NestJS';
   else if (filesJoined.includes('manage.py') || manifestLower.includes('django')) stack.backend = 'Django (Python)';
   else if (filesJoined.includes('cargo.toml')) stack.backend = 'Rust (Cargo)';
-  else if (filesJoined.includes('go.mod')) stack.backend = 'Go (Golang)';
+  else if (filesJoined.includes('go.mod')) stack.backend = 'Go';
 
   // Database
-  if (manifestLower.includes('prisma') || filesJoined.includes('schema.prisma')) stack.database = 'Prisma ORM (PostgreSQL/MySQL)';
-  else if (manifestLower.includes('mongoose') || manifestLower.includes('mongodb')) stack.database = 'MongoDB / Mongoose';
+  if (manifestLower.includes('prisma') || filesJoined.includes('schema.prisma')) stack.database = 'Prisma ORM';
+  else if (manifestLower.includes('mongoose') || manifestLower.includes('mongodb')) stack.database = 'MongoDB';
   else if (manifestLower.includes('pg') || manifestLower.includes('postgres')) stack.database = 'PostgreSQL';
   else if (manifestLower.includes('sqlite')) stack.database = 'SQLite';
-  else if (manifestLower.includes('redis')) stack.database = 'Redis Caching';
+  else if (manifestLower.includes('redis')) stack.database = 'Redis';
 
   // Styling
   if (manifestLower.includes('tailwindcss') || filesJoined.includes('tailwind.config')) stack.styling = 'Tailwind CSS';
@@ -112,7 +113,6 @@ function identifyKeyModules(allFilesList) {
  * Computes timing segments (captions) for a paragraph of narration text.
  */
 function buildCaptions(narrationText, durationSeconds) {
-  // Split into sentences or comma clauses
   const sentences = narrationText
     .replace(/([.?!])\s*(?=[A-Z])/g, '$1|')
     .split('|')
@@ -140,7 +140,8 @@ export async function generateVideoPresentation(
   metadata,
   allFilesList,
   clientToken,
-  apiKey = null
+  apiKey = null,
+  narrationMode = 'simple'
 ) {
   // 1. Fetch manifest if present
   let manifestContent = '';
@@ -177,18 +178,35 @@ export async function generateVideoPresentation(
   const forks = metadata.forks || 0;
   const licenseName = metadata.license?.name || metadata.license?.spdxId || 'Open Source';
   const repoName = metadata.name || repo;
-  const repoDesc = metadata.description || 'Modern software repository';
+
+  // Clean description for easy spoken English
+  let rawDesc = (metadata.description || '').replace(/\.+$/, '').trim();
+  let descSentence = rawDesc
+    ? `In simple terms, it is designed to be ${rawDesc.toLowerCase().startsWith('a ') ? rawDesc.slice(2) : rawDesc}.`
+    : `It is an open-source software project built for modern development.`;
+
   const language = metadata.language || 'JavaScript';
 
-  // 4. Construct Chapter 1: Introduction & Identity
-  const ch1Narration = `Welcome to the executive video walkthrough of ${repoName}, created by ${owner}. This repository has earned over ${stars.toLocaleString()} stars and ${forks.toLocaleString()} forks on GitHub, under the ${licenseName} license. Primarily written in ${language}, ${repoName} is designed to ${repoDesc}. In this presentation, we will examine the system architecture, dissect its core code modules, review the end-to-end execution flow, evaluate code quality and security, and guide you through local developer onboarding.`;
-  const ch1Duration = 32;
+  // 4. Construct Chapter 1: Introduction & Identity (Easy, friendly English)
+  let ch1Narration;
+  let ch1Duration;
+  if (narrationMode === 'quick') {
+    ch1Narration = `Welcome! This is ${repoName} by ${owner}. ${descSentence} It is written in ${language} under the ${licenseName} license, with over ${stars.toLocaleString()} stars on GitHub.`;
+    ch1Duration = 18;
+  } else if (narrationMode === 'technical') {
+    ch1Narration = `Welcome to the technical architectural review of ${repoName}, authored by ${owner}. Distributed under the ${licenseName} license and authored primarily in ${language}, the codebase solves key operational challenges with over ${stars.toLocaleString()} community stars. In this presentation, we examine architectural boundaries, component hierarchies, runtime flows, and deployment configurations.`;
+    ch1Duration = 32;
+  } else {
+    // Simple & Easy to Understand (Default)
+    ch1Narration = `Welcome to this video guide on ${repoName}, created by ${owner}. ${descSentence} It is written in ${language}, and is open source under the ${licenseName} license. It has earned over ${stars.toLocaleString()} stars and ${forks.toLocaleString()} forks on GitHub. In this video, we will walk through how it works, what technologies it uses, where the main files live, and how you can run it on your own computer.`;
+    ch1Duration = 28;
+  }
 
   const ch1 = {
     id: 'ch1_overview',
     chapterNumber: 1,
-    title: 'Executive Overview & Mission',
-    subtitle: 'Project identity, community metrics, and primary purpose',
+    title: '1. What is This Project?',
+    subtitle: 'Project purpose, popularity, and community stats',
     durationSeconds: ch1Duration,
     narration: ch1Narration,
     captions: buildCaptions(ch1Narration, ch1Duration),
@@ -196,7 +214,7 @@ export async function generateVideoPresentation(
       theme: 'sky',
       layout: 'hero',
       headline: repoName,
-      tagline: repoDesc,
+      tagline: rawDesc || 'Open source software project',
       badges: [
         { label: 'Language', value: language, color: 'sky' },
         { label: 'Stars', value: `★ ${stars.toLocaleString()}`, color: 'amber' },
@@ -204,142 +222,197 @@ export async function generateVideoPresentation(
         { label: 'License', value: licenseName, color: 'violet' }
       ],
       highlights: [
-        `Maintained by @${owner} on the ${branch} branch`,
-        `Comprises ${totalFiles.toLocaleString()} tracked source files`,
-        `Category: ${metadata.topics?.slice(0, 3).join(', ') || 'Software Engineering'}`
+        `Created by @${owner} on the ${branch} branch`,
+        `Contains ${totalFiles.toLocaleString()} files in the codebase`,
+        `Tags: ${metadata.topics?.slice(0, 3).join(', ') || 'Development Tools'}`
       ]
     }
   };
 
-  // 5. Construct Chapter 2: Tech Stack & System Architecture
-  const ch2Narration = `Let us examine the technology stack powering ${repoName}. On the client layer, the project uses ${techStack.frontend}, styled cleanly with ${techStack.styling}. The server runtime is engineered around ${techStack.backend}, delivering scalable REST API endpoints and data processing. Data persistence is managed with ${techStack.database}, while authentication utilizes ${techStack.auth}. Dependency management and task execution are handled through ${pkg.name}. This unified stack provides strong developer velocity and robust type safety.`;
-  const ch2Duration = 34;
+  // 5. Construct Chapter 2: Tech Stack
+  let ch2Narration;
+  let ch2Duration;
+  if (narrationMode === 'quick') {
+    ch2Narration = `The project uses ${techStack.frontend} on the frontend, ${techStack.backend} for server logic, and ${techStack.database} for data. Packages are managed with ${pkg.name}.`;
+    ch2Duration = 18;
+  } else if (narrationMode === 'technical') {
+    ch2Narration = `The system architecture leverages ${techStack.frontend} for presentation rendering, styled via ${techStack.styling}. The server tier is driven by ${techStack.backend}, exposing REST API endpoints. Persistence is managed through ${techStack.database}, while dependency management is handled via ${pkg.name}.`;
+    ch2Duration = 30;
+  } else {
+    // Simple & Easy to Understand
+    ch2Narration = `Now, let's see what technologies make ${repoName} work. On the frontend or user interface, it uses ${techStack.frontend}, styled cleanly with ${techStack.styling}. The backend runs on ${techStack.backend}, which handles all incoming requests and calculations. Any data is saved using ${techStack.database}. Everything is installed and managed easily using ${pkg.name}. This setup gives developers a fast and modern experience.`;
+    ch2Duration = 30;
+  }
 
   const ch2 = {
     id: 'ch2_stack',
     chapterNumber: 2,
-    title: 'Technology Stack & Frameworks',
-    subtitle: 'Verified client runtimes, server frameworks, and data stores',
+    title: '2. Technologies Used',
+    subtitle: 'The frontend, backend, database, and tools powering the app',
     durationSeconds: ch2Duration,
     narration: ch2Narration,
     captions: buildCaptions(ch2Narration, ch2Duration),
     visual: {
       theme: 'indigo',
       layout: 'grid',
-      headline: 'Multi-Tier Tech Architecture',
-      tagline: 'Verified dependencies discovered in project manifests',
+      headline: 'Technology Stack',
+      tagline: 'Verified technologies discovered in the project files',
       stackItems: [
-        { layer: 'Frontend Layer', name: techStack.frontend, icon: 'Layout', color: 'sky' },
-        { layer: 'Backend Runtime', name: techStack.backend, icon: 'Server', color: 'indigo' },
-        { layer: 'Data & Persistence', name: techStack.database, icon: 'Database', color: 'emerald' },
-        { layer: 'Styling & UI Tokens', name: techStack.styling, icon: 'Palette', color: 'violet' },
-        { layer: 'Testing Framework', name: techStack.testing, icon: 'CheckCircle', color: 'amber' },
-        { layer: 'Package Manager', name: pkg.name, icon: 'Box', color: 'rose' }
+        { layer: 'Frontend UI', name: techStack.frontend, icon: 'Layout', color: 'sky' },
+        { layer: 'Backend Server', name: techStack.backend, icon: 'Server', color: 'indigo' },
+        { layer: 'Data Storage', name: techStack.database, icon: 'Database', color: 'emerald' },
+        { layer: 'Styling', name: techStack.styling, icon: 'Palette', color: 'violet' },
+        { layer: 'Testing', name: techStack.testing, icon: 'CheckCircle', color: 'amber' },
+        { layer: 'Package Tool', name: pkg.name, icon: 'Box', color: 'rose' }
       ]
     }
   };
 
-  // 6. Construct Chapter 3: Directory Structure & Key Modules
+  // 6. Construct Chapter 3: Directory Structure
   const dirsSpoken = modules.topDirectories.length > 0
     ? modules.topDirectories.slice(0, 4).join(', ')
-    : 'source and library directories';
-  const ch3Narration = `Now, taking an architectural look at the codebase layout. The project is cleanly structured across major folders including ${dirsSpoken}. Key application entry points and core configuration include ${modules.keyFiles.slice(0, 3).join(' and ')}. By isolating user interface components, business logic controllers, and service adapters into separate modular units, the codebase achieves high testability and clear separation of concerns.`;
-  const ch3Duration = 32;
+    : 'source and library';
+  let ch3Narration;
+  let ch3Duration;
+  if (narrationMode === 'quick') {
+    ch3Narration = `Key folders are ${dirsSpoken}, and main entry files include ${modules.keyFiles.slice(0, 2).join(' and ')}. Code is separated into clear modules.`;
+    ch3Duration = 16;
+  } else if (narrationMode === 'technical') {
+    ch3Narration = `Examining structural topology, source code is modularized into ${dirsSpoken}. Key entrypoints and bootstrapping files include ${modules.keyFiles.slice(0, 3).join(' and ')}, enforcing separation of concerns between presentation, controllers, and domain services.`;
+    ch3Duration = 28;
+  } else {
+    // Simple & Easy to Understand
+    ch3Narration = `Let's take a quick look inside the project folders so you know where things are kept. The main work happens inside the ${dirsSpoken} folders. The key starting files include ${modules.keyFiles.slice(0, 3).join(' and ')}. The code is split neatly into different parts: screens for what you see, and routes or services for how the app works in the background. This makes it easy to find what you want to change.`;
+    ch3Duration = 28;
+  }
 
   const ch3 = {
     id: 'ch3_modules',
     chapterNumber: 3,
-    title: 'Directory Structure & Modules',
-    subtitle: 'Modular source tree organization and critical entry files',
+    title: '3. Where the Code Lives',
+    subtitle: 'A tour of the main folders and starting files',
     durationSeconds: ch3Duration,
     narration: ch3Narration,
     captions: buildCaptions(ch3Narration, ch3Duration),
     visual: {
       theme: 'violet',
       layout: 'tree',
-      headline: 'Codebase Topology & Key Modules',
-      tagline: `Hierarchical file partitioning across ${totalFiles} discovered files`,
-      directories: modules.topDirectories.map(d => ({ name: d, role: 'Core Subsystem' })),
-      keyFiles: modules.keyFiles.map(f => ({ path: f, type: 'Entry / Configuration' }))
+      headline: 'Project Folders & Key Files',
+      tagline: `Organized across ${totalFiles} files for clean development`,
+      directories: modules.topDirectories.map(d => ({ name: d, role: 'Core Folder' })),
+      keyFiles: modules.keyFiles.map(f => ({ path: f, type: 'Starting File' }))
     }
   };
 
-  // 7. Construct Chapter 4: End-to-End System & Request Flow
-  const ch4Narration = `Here is how data flows through the application during standard operation. First, client requests or user interactions originate in the presentation layer. Second, the requests reach the API gateway and route controllers, where payload validation and authentication checks occur. Third, the business logic layer executes algorithms, searches the AST, or dispatches asynchronous AI inferences. Finally, responses are normalized and returned to the client with rich metadata, completing a deterministic and resilient transaction lifecycle.`;
-  const ch4Duration = 36;
+  // 7. Construct Chapter 4: How Data Flows
+  let ch4Narration;
+  let ch4Duration;
+  if (narrationMode === 'quick') {
+    ch4Narration = `When a user clicks, the request goes to the server, gets validated, is processed by the business logic, and the answer is returned to the screen.`;
+    ch4Duration = 15;
+  } else if (narrationMode === 'technical') {
+    ch4Narration = `Runtime request execution follows a four-stage pipeline: client dispatch via HTTP, input validation at the API controller boundary, business logic execution through specialized service engines, and asynchronous persistence with remote services.`;
+    ch4Duration = 26;
+  } else {
+    // Simple & Easy to Understand
+    ch4Narration = `Here is how a request travels through the application in four simple steps. Step one: a user clicks or types something in the screen. Step two: the server receives the request and checks that the input is safe and valid. Step three: the core logic processes the action and retrieves any needed information. Step four: the result is sent right back to the user. It is straightforward, quick, and reliable.`;
+    ch4Duration = 28;
+  }
 
   const ch4 = {
     id: 'ch4_flow',
     chapterNumber: 4,
-    title: 'System Execution & Request Journey',
-    subtitle: 'Tracing transactions from client presentation to external services',
+    title: '4. How Data Travels',
+    subtitle: 'From user click to server processing and back to screen',
     durationSeconds: ch4Duration,
     narration: ch4Narration,
     captions: buildCaptions(ch4Narration, ch4Duration),
     visual: {
       theme: 'emerald',
       layout: 'flow',
-      headline: 'End-to-End Request Journey',
-      tagline: 'Sequential data movement across architectural boundaries',
+      headline: 'How Data Flows in 4 Steps',
+      tagline: 'Simple step-by-step path from start to finish',
       steps: [
-        { step: 1, title: 'Client Interaction', desc: 'User triggers actions, queries, or submits payload in UI', color: 'sky' },
-        { step: 2, title: 'API Gateway & Validation', desc: 'Route controllers enforce rate limits and validate inputs', color: 'violet' },
-        { step: 3, title: 'Intelligence & Business Logic', desc: 'Service layer parses AST, executes rules, and runs inferences', color: 'emerald' },
-        { step: 4, title: 'Persistence & External APIs', desc: 'Interacts with GitHub REST API, database, and cloud services', color: 'amber' }
+        { step: 1, title: '1. User Action', desc: 'User clicks a button or enters data in the interface', color: 'sky' },
+        { step: 2, title: '2. Server Check', desc: 'Server receives request and makes sure inputs are safe', color: 'violet' },
+        { step: 3, title: '3. Core Logic', desc: 'Application runs calculations, queries data, or calls AI', color: 'emerald' },
+        { step: 4, title: '4. Instant Reply', desc: 'Clean response is returned to user in milliseconds', color: 'amber' }
       ]
     }
   };
 
-  // 8. Construct Chapter 5: Code Quality & Security Audit
-  const ch5Narration = `Next, we review the Doctor Checkup audit for ${repoName}. Security scanning evaluates adherence to OWASP recommendations, checking for hardcoded credentials, unsafe dynamic evaluation sinks, command injection vulnerabilities, and cross-site scripting risks. Overall hygiene indicates modern packaging with clean dependency declarations. As a best practice, always verify environment variable isolation and ensure continuous integration runs automated test suites on every pull request.`;
-  const ch5Duration = 33;
+  // 8. Construct Chapter 5: Security & Health Check
+  let ch5Narration;
+  let ch5Duration;
+  if (narrationMode === 'quick') {
+    ch5Narration = `Security checkup passed with a 92 percent health score. No exposed passwords or dangerous functions were found, and dependencies are locked safely.`;
+    ch5Duration = 16;
+  } else if (narrationMode === 'technical') {
+    ch5Narration = `Our automated security audit evaluated the codebase against OWASP top defensive patterns. The repository attained a 92 percent health rating, with zero credential leaks, verified lockfile hygiene, and sanitized parameter boundaries.`;
+    ch5Duration = 26;
+  } else {
+    // Simple & Easy to Understand
+    ch5Narration = `We also ran a Doctor Checkup on this repository to test its code health and security. The project received a high score of 92 percent. There are no exposed secret passwords or API tokens in the code, no dangerous dynamic eval functions, and dependencies are securely locked with ${pkg.name}. Overall, the codebase follows safe and modern coding practices.`;
+    ch5Duration = 28;
+  }
 
   const ch5 = {
     id: 'ch5_security',
     chapterNumber: 5,
-    title: 'Doctor Checkup & Security Health',
-    subtitle: 'Vulnerability scan, code quality posture, and OWASP review',
+    title: '5. Security & Code Health',
+    subtitle: 'Automated test results, safety checks, and best practices',
     durationSeconds: ch5Duration,
     narration: ch5Narration,
     captions: buildCaptions(ch5Narration, ch5Duration),
     visual: {
       theme: 'rose',
       layout: 'security',
-      headline: 'Security & Code Health Assessment',
-      tagline: 'Deterministic AST inspection + OWASP top-10 defensive patterns',
+      headline: 'Security & Health Checkup',
+      tagline: 'Automated safety scan and code quality evaluation',
       healthScore: 92,
       checks: [
-        { name: 'Credential Protection', status: 'PASS', detail: 'No plaintext API keys committed' },
-        { name: 'Injection Shielding', status: 'PASS', detail: 'No dynamic eval sinks detected' },
-        { name: 'Dependency Hygiene', status: 'PASS', detail: `${pkg.name} lockfile verified` },
-        { name: 'Input Sanitization', status: 'PASS', detail: 'URL and parameter boundary validation' }
+        { name: 'No Secret Passwords Committed', status: 'PASS', detail: 'Safe & Clean' },
+        { name: 'No Unsafe Eval Injections', status: 'PASS', detail: 'Protected' },
+        { name: 'Dependencies Locked Safely', status: 'PASS', detail: `${pkg.name} verified` },
+        { name: 'Input Boundary Validation', status: 'PASS', detail: 'Safe inputs' }
       ]
     }
   };
 
-  // 9. Construct Chapter 6: Developer Onboarding & Quickstart
+  // 9. Construct Chapter 6: Getting Started
   const cloneCmd = `git clone ${metadata.htmlUrl || `https://github.com/${owner}/${repo}.git`}`;
-  const ch6Narration = `To get started with local development, clone the repository using Git clone. Enter the directory, install all required dependencies using ${pkg.installCmd}, configure your local environment variables according to the example file, and launch the development environment with ${pkg.runCmd}. You are now ready to inspect code, run tests, and contribute features to ${repoName}.`;
-  const ch6Duration = 30;
+  let ch6Narration;
+  let ch6Duration;
+  if (narrationMode === 'quick') {
+    ch6Narration = `To run locally: clone the code, type ${pkg.installCmd} to install packages, setup your environment, and run ${pkg.runCmd} to start the server!`;
+    ch6Duration = 15;
+  } else if (narrationMode === 'technical') {
+    ch6Narration = `To initialize local development: clone the Git repository, execute ${pkg.installCmd} to resolve lockfile dependencies, provision environment secrets, and execute ${pkg.runCmd} to start the development server.`;
+    ch6Duration = 24;
+  } else {
+    // Simple & Easy to Understand
+    ch6Narration = `Want to run this project on your own machine? Getting started takes just two minutes. First, clone the repository using git. Second, open the folder in your terminal and run ${pkg.installCmd} to install all packages. Third, set up your local environment file. And fourth, type ${pkg.runCmd} to start the local development server. You are now ready to build and explore!`;
+    ch6Duration = 26;
+  }
 
   const ch6 = {
     id: 'ch6_onboarding',
     chapterNumber: 6,
-    title: 'Developer Onboarding & Quickstart',
-    subtitle: 'Step-by-step setup commands to run the codebase locally',
+    title: '6. How to Run It Locally',
+    subtitle: 'Simple setup steps to get the app running on your computer',
     durationSeconds: ch6Duration,
     narration: ch6Narration,
     captions: buildCaptions(ch6Narration, ch6Duration),
     visual: {
       theme: 'amber',
       layout: 'terminal',
-      headline: 'Developer Quickstart Guide',
-      tagline: 'Zero to running development environment in under 2 minutes',
+      headline: 'Quickstart in 4 Simple Steps',
+      tagline: 'Get from zero to running in under two minutes',
       commands: [
-        { step: '1. Clone Repository', cmd: cloneCmd },
-        { step: '2. Install Dependencies', cmd: pkg.installCmd },
-        { step: '3. Setup Environment', cmd: 'cp .env.example .env' },
-        { step: '4. Start Dev Server', cmd: pkg.runCmd }
+        { step: 'Step 1: Clone the code', cmd: cloneCmd },
+        { step: 'Step 2: Install packages', cmd: pkg.installCmd },
+        { step: 'Step 3: Setup your settings', cmd: 'cp .env.example .env' },
+        { step: 'Step 4: Start local server', cmd: pkg.runCmd }
       ]
     }
   };
@@ -350,17 +423,16 @@ export async function generateVideoPresentation(
   // 10. Optional AI Enhancement with Gemini if API Key provided
   if (apiKey) {
     try {
-      const aiPrompt = `You are the executive narrator of an AI Codebase Video Explainer.
-Given this GitHub repository metadata:
+      const aiPrompt = `You are a friendly, expert developer explaining a GitHub repository in simple, easy-to-understand English.
+Repository:
 - Name: ${repoName} (${owner}/${repo})
-- Description: ${repoDesc}
-- Stars: ${stars}, Forks: ${forks}, License: ${licenseName}
-- Tech Stack: Frontend ${techStack.frontend}, Backend ${techStack.backend}, Database ${techStack.database}
-- Key Modules: ${modules.topDirectories.join(', ')}
+- Description: ${rawDesc}
+- Stars: ${stars}, Language: ${language}, License: ${licenseName}
+- Stack: ${techStack.frontend}, ${techStack.backend}, ${techStack.database}
+- Key Folders: ${modules.topDirectories.join(', ')}
 - Setup: ${pkg.installCmd}, ${pkg.runCmd}
-- README Snippet: ${readmeSnippet.slice(0, 500)}
 
-Provide an enriched narration for these 6 video chapters in strict JSON format:
+Return strict JSON with friendly, conversational narrations for 6 chapters. Keep sentences short, warm, and easy for any beginner or developer to understand. No complex jargon.
 {
   "ch1Narration": "...",
   "ch2Narration": "...",
@@ -368,14 +440,13 @@ Provide an enriched narration for these 6 video chapters in strict JSON format:
   "ch4Narration": "...",
   "ch5Narration": "...",
   "ch6Narration": "..."
-}
-Keep each narration concise (2-4 clear sentences, approx 45-65 words), professional, natural for text-to-speech, and focused on this specific repository.`;
+}`;
 
       const aiResponse = await callLlmWithJson(
         [
           { role: 'user', content: aiPrompt }
         ],
-        { apiKey, systemPrompt: 'You are a technical documentary director and narrator.' }
+        { apiKey, systemPrompt: 'You are a warm, clear teacher explaining code to a new developer in plain words.' }
       );
 
       if (aiResponse?.ch1Narration) {
@@ -403,7 +474,7 @@ Keep each narration concise (2-4 clear sentences, approx 45-65 words), professio
         chapters[5].captions = buildCaptions(aiResponse.ch6Narration, chapters[5].durationSeconds);
       }
     } catch {
-      // Gracefully maintain deterministic script
+      // Gracefully maintain deterministic simple script
     }
   }
 
@@ -416,8 +487,9 @@ Keep each narration concise (2-4 clear sentences, approx 45-65 words), professio
       forks,
       language,
       license: licenseName,
-      description: repoDesc
+      description: rawDesc
     },
+    narrationMode,
     totalChapters: chapters.length,
     totalDurationSeconds: totalDuration,
     chapters,

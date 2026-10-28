@@ -51,6 +51,7 @@ router.post(['/script', '/'], analysisLimiter, async (req, res, next) => {
 
     const clientToken = req.headers['x-github-token'];
     const apiKey = resolveApiKey(req);
+    const narrationMode = req.body.narrationMode || 'simple';
 
     // 1. Fetch repository metadata
     const metadata = await fetchRepositoryMetadata(owner, repo, clientToken);
@@ -66,7 +67,8 @@ router.post(['/script', '/'], analysisLimiter, async (req, res, next) => {
       metadata,
       treeResult.allFilesList,
       clientToken,
-      apiKey
+      apiKey,
+      narrationMode
     );
 
     res.json({
