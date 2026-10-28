@@ -37,14 +37,6 @@ import VideoPlayer from '../components/VideoPlayer';
 import EmptyState from '../components/EmptyState';
 import ErrorMessage from '../components/ErrorMessage';
 
-const COLOR_PALETTES = [
-  { id: 'sky', label: 'Ocean Sky', bg: 'bg-[#0ea5e9]', hex: '#0ea5e9' },
-  { id: 'emerald', label: 'Emerald Mint', bg: 'bg-[#10b981]', hex: '#10b981' },
-  { id: 'violet', label: 'Electric Violet', bg: 'bg-[#8b5cf6]', hex: '#8b5cf6' },
-  { id: 'rose', label: 'Sunset Rose', bg: 'bg-[#f43f5e]', hex: '#f43f5e' },
-  { id: 'amber', label: 'Solar Amber', bg: 'bg-[#f59e0b]', hex: '#f59e0b' },
-];
-
 export default function VideoWalkthroughPage() {
   const {
     currentRepo,
@@ -52,11 +44,7 @@ export default function VideoWalkthroughPage() {
     isVideoLoading,
     videoError,
     requestVideoScript,
-    analyze,
-    accentColor,
-    setAccentColor,
-    theme,
-    setTheme
+    analyze
   } = useRepository();
 
   const navigate = useNavigate();
@@ -121,111 +109,62 @@ export default function VideoWalkthroughPage() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 pb-16">
-      {/* Header Banner */}
-      <div className="bg-surface-900 border border-surface-750 rounded-2xl p-4 md:p-5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div className="space-y-1">
+      {/* Sleek, Uncongested Page Header */}
+      <div className="bg-surface-900 border border-surface-750 rounded-2xl p-4 md:p-6 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div className="space-y-1.5">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="px-2 py-0.5 rounded-full bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 font-mono text-[10px] font-bold border border-sky-200 dark:border-sky-800 flex items-center gap-1">
-              <Video className="w-3 h-3 text-sky-600 dark:text-sky-400" />
+            <span className="px-2.5 py-0.5 rounded-full bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 font-mono text-[10px] font-bold border border-sky-200 dark:border-sky-800 flex items-center gap-1.5">
+              <Video className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
               AI VIDEO EXPLAINER
             </span>
             <span className="text-xs text-slate-500 font-mono">
               Target: <strong className="text-slate-800 dark:text-slate-200">{currentRepo.fullName}</strong>
             </span>
           </div>
-          <h2 className="text-lg md:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            Repository Video Summary & Explainer
+          <h2 className="text-xl md:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            Repository Video Explainer & Walkthrough
           </h2>
-          <p className="text-xs text-slate-600 dark:text-slate-400 max-w-3xl leading-relaxed">
-            An easy-to-understand 6-chapter audio-visual presentation with synchronized voiceover explaining what this project does and how you can run it.
+          <p className="text-xs md:text-sm text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
+            A synchronized 6-chapter audio-visual presentation with voice narration explaining codebase architecture and onboarding setup.
           </p>
         </div>
 
-        {/* Header Actions */}
-        <div className="flex items-center gap-3 shrink-0 self-stretch md:self-auto">
+        {/* Clean Controls: Tone Picker & Regenerate */}
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          {/* Tone Selector */}
+          <div className="flex items-center p-1 rounded-xl bg-surface-800 border border-surface-750">
+            {[
+              { id: 'simple', label: 'Beginner', fullLabel: 'Simple & Clear (Beginner)', icon: Sparkles },
+              { id: 'technical', label: 'Technical', fullLabel: 'Technical Deep Dive', icon: Layers },
+              { id: 'quick', label: 'Quick 60s', fullLabel: 'Quick 60s Summary', icon: Zap },
+            ].map((mode) => {
+              const Icon = mode.icon;
+              const isSelected = selectedNarrationMode === mode.id;
+              return (
+                <button
+                  key={mode.id}
+                  onClick={() => handleModeChange(mode.id)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                    isSelected
+                      ? 'bg-surface-900 text-sky-600 dark:text-sky-400 shadow-sm font-bold border border-surface-750'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  }`}
+                  title={mode.fullLabel}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span>{mode.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
           <button
             onClick={() => requestVideoScript(true, selectedNarrationMode)}
             disabled={isVideoLoading}
             className="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white bg-surface-800 hover:bg-surface-750 border border-surface-750 transition-colors shadow-sm disabled:opacity-50"
           >
             <RefreshCw className={`w-3.5 h-3.5 text-sky-500 ${isVideoLoading ? 'animate-spin' : ''}`} />
-            <span>Regenerate Video</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Control Strip: Language Tone & Color Palette Bar */}
-      <div className="bg-surface-900 border border-surface-750 rounded-xl px-4 py-2.5 shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-        {/* Left: Language & Explanation Style */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 font-semibold mr-1">
-            <BookOpen className="w-4 h-4 text-sky-500" />
-            <span>Language Style:</span>
-          </div>
-          {[
-            { id: 'simple', label: 'Simple & Clear (Beginner)', icon: Sparkles },
-            { id: 'technical', label: 'Technical Deep Dive', icon: Layers },
-            { id: 'quick', label: 'Quick 60s Summary', icon: Zap },
-          ].map((mode) => {
-            const Icon = mode.icon;
-            const isSelected = selectedNarrationMode === mode.id;
-            return (
-              <button
-                key={mode.id}
-                onClick={() => handleModeChange(mode.id)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold transition-all ${
-                  isSelected
-                    ? 'bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border border-sky-300 dark:border-sky-800 shadow-sm'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-surface-800 hover:bg-surface-750 border border-surface-750'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                <span>{mode.label}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Right: Color Palette Bar with Dark Theme option */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 font-semibold mr-1">
-            <Palette className="w-4 h-4 text-sky-500" />
-            <span>Color Palette:</span>
-          </div>
-
-          {/* Color Palettes */}
-          {COLOR_PALETTES.map((p) => {
-            const isSelected = accentColor === p.id;
-            return (
-              <button
-                key={p.id}
-                onClick={() => setAccentColor(p.id)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold transition-all border ${
-                  isSelected
-                    ? 'bg-sky-50 dark:bg-surface-800 text-sky-700 dark:text-sky-300 font-bold border-sky-400 dark:border-sky-500 shadow-sm ring-1 ring-sky-400/40'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-surface-800 border-surface-750'
-                }`}
-                title={`Select ${p.label} theme`}
-              >
-                <span className={`w-2.5 h-2.5 rounded-full ${p.bg}`} />
-                <span>{p.label.split(' ')[0]}</span>
-              </button>
-            );
-          })}
-
-          {/* Dark Theme Option */}
-          <button
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-bold transition-all border ${
-              theme === 'dark'
-                ? 'bg-slate-900 text-amber-300 border-amber-400/60 shadow-sm ring-1 ring-amber-400/40'
-                : 'bg-surface-800 hover:bg-surface-750 text-slate-700 dark:text-slate-300 border-surface-750'
-            }`}
-            title={theme === 'dark' ? 'Dark Theme is active (click to switch to light mode)' : 'Switch to Dark Theme'}
-          >
-            <Moon className={`w-3.5 h-3.5 ${theme === 'dark' ? 'text-amber-300 fill-amber-300' : 'text-slate-500'}`} />
-            <span>Dark Theme</span>
-            {theme === 'dark' && <span className="text-[10px] text-amber-400 font-mono font-bold ml-0.5">✓</span>}
+            <span>Regenerate</span>
           </button>
         </div>
       </div>

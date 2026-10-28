@@ -98,7 +98,7 @@ export function RepositoryProvider({ children }) {
   });
 
   // Theme state ('light' by default, persisted in localStorage)
-  const [theme, setTheme] = useState(() => {
+  const [theme, setThemeState] = useState(() => {
     try {
       const saved = localStorage.getItem('devlens_theme');
       return saved === 'dark' ? 'dark' : 'light';
@@ -106,6 +106,34 @@ export function RepositoryProvider({ children }) {
       return 'light';
     }
   });
+
+  // Explicit, synchronous theme setter
+  const setTheme = (newTheme) => {
+    setThemeState(prev => {
+      const resolved = typeof newTheme === 'function' ? newTheme(prev) : newTheme;
+      const valid = resolved === 'dark' ? 'dark' : 'light';
+      try {
+        localStorage.setItem('devlens_theme', valid);
+      } catch {
+        // ignore
+      }
+      if (typeof document !== 'undefined') {
+        const root = document.documentElement;
+        if (valid === 'dark') {
+          root.classList.add('dark');
+          root.classList.remove('light');
+        } else {
+          root.classList.add('light');
+          root.classList.remove('dark');
+        }
+      }
+      return valid;
+    });
+  };
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  };
 
   // Color Accent Palette ('sky' | 'emerald' | 'violet' | 'rose' | 'amber')
   const [accentColor, setAccentColorState] = useState(() => {
@@ -136,24 +164,17 @@ export function RepositoryProvider({ children }) {
   }, [accentColor]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('devlens_theme', theme);
-    } catch {
-      // ignore
-    }
-    const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-      root.classList.remove('light');
-    } else {
-      root.classList.add('light');
-      root.classList.remove('dark');
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement;
+      if (theme === 'dark') {
+        root.classList.add('dark');
+        root.classList.remove('light');
+      } else {
+        root.classList.add('light');
+        root.classList.remove('dark');
+      }
     }
   }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
-  };
 
   // Recent analysis history (Persisted in localStorage)
   const [history, setHistory] = useState(() => {
