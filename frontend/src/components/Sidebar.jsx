@@ -10,7 +10,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Layers,
-  Stethoscope
+  Stethoscope,
+  Video
 } from 'lucide-react';
 import { useRepository } from '../context/RepositoryContext';
 
@@ -19,6 +20,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }) {
 
   const navItems = [
     { to: '/', label: 'Overview', icon: Compass, color: 'text-sky-500' },
+    { to: '/video', label: 'Video Walkthrough', icon: Video, color: 'text-rose-500' },
     { to: '/architecture', label: 'Architecture Map', icon: Layers, color: 'text-indigo-500' },
     { to: '/audit', label: 'Doctor Checkup', icon: Stethoscope, color: 'text-emerald-500' },
     { to: '/analyzer', label: 'Repository Analyzer', icon: Code2, color: 'text-violet-500' },
@@ -78,7 +80,7 @@ export default function Sidebar({ isCollapsed, onToggleCollapse }) {
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isFeatured = item.to === '/architecture' || item.to === '/audit';
+          const isFeatured = item.to === '/architecture' || item.to === '/audit' || item.to === '/video';
           return (
             <NavLink
               key={item.to}

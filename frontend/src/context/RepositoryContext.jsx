@@ -15,6 +15,7 @@ import {
   fetchAudit,
   generateAuditFix,
   fetchOnboardingSummary,
+  fetchVideoScript,
   sendCodebaseChat,
   getSystemStatus
 } from '../services/api.js';
@@ -67,6 +68,11 @@ export function RepositoryProvider({ children }) {
   const [onboardingData, setOnboardingData] = useState(null);
   const [isOnboardingLoading, setIsOnboardingLoading] = useState(false);
   const [onboardingError, setOnboardingError] = useState(null);
+
+  // Feature 4: Video Walkthrough Presentation State
+  const [videoData, setVideoData] = useState(null);
+  const [isVideoLoading, setIsVideoLoading] = useState(false);
+  const [videoError, setVideoError] = useState(null);
 
   // Sidebar Codebase Grounded Chat State
   const [isChatDrawerOpen, setIsChatDrawerOpen] = useState(false);
@@ -165,11 +171,13 @@ export function RepositoryProvider({ children }) {
     setArchitectureData(null);
     setAuditData(null);
     setOnboardingData(null);
+    setVideoData(null);
     setChatMessages([]);
     setSummaryError(null);
     setArchitectureError(null);
     setAuditError(null);
     setOnboardingError(null);
+    setVideoError(null);
     setChatError(null);
     setCurrentRepoUrl(url);
 
@@ -330,6 +338,27 @@ export function RepositoryProvider({ children }) {
     }
   };
 
+  // Request Video Walkthrough Presentation Script
+  const requestVideoScript = async (forceRefresh = false) => {
+    if (!currentRepo) return null;
+    if (videoData && !forceRefresh) return videoData;
+
+    setIsVideoLoading(true);
+    setVideoError(null);
+
+    try {
+      const repoUrl = currentRepoUrl || currentRepo.htmlUrl;
+      const data = await fetchVideoScript(repoUrl, sessionKeys);
+      setVideoData(data);
+      return data;
+    } catch (err) {
+      setVideoError(err.message || 'Failed to generate video walkthrough presentation.');
+      throw err;
+    } finally {
+      setIsVideoLoading(false);
+    }
+  };
+
   // Request Legacy AI Summary
   const requestSummary = async () => {
     if (!currentRepo) return;
@@ -422,6 +451,8 @@ export function RepositoryProvider({ children }) {
     setArchitectureData(null);
     setAuditData(null);
     setOnboardingData(null);
+    setVideoData(null);
+    setVideoError(null);
     setChatMessages([]);
     setAnalysisError(null);
   };
@@ -452,6 +483,9 @@ export function RepositoryProvider({ children }) {
         onboardingData,
         isOnboardingLoading,
         onboardingError,
+        videoData,
+        isVideoLoading,
+        videoError,
         chatMessages,
         isAsking,
         chatError,
@@ -469,6 +503,7 @@ export function RepositoryProvider({ children }) {
         markFindingStatus,
         requestOnboarding,
         requestSummary,
+        requestVideoScript,
         ask,
         clearChat,
         toggleChatDrawer,

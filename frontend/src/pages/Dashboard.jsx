@@ -7,7 +7,8 @@ import {
   ArrowRight,
   RefreshCw,
   Layers,
-  Stethoscope
+  Stethoscope,
+  Video
 } from 'lucide-react';
 import { useRepository } from '../context/RepositoryContext';
 import RepositoryInput from '../components/RepositoryInput';
@@ -112,7 +113,34 @@ export default function Dashboard() {
               </h3>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Feature: Video Walkthrough */}
+              <button
+                onClick={() => navigate('/video')}
+                className="group relative p-6 rounded-3xl bg-surface-900 hover:bg-rose-50/50 dark:hover:bg-surface-850 border border-surface-750 hover:border-rose-300 dark:hover:border-rose-700 text-left transition-all duration-200 shadow-sm hover:shadow-md flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="p-3 rounded-2xl bg-rose-100 dark:bg-rose-900/60 text-rose-600 group-hover:scale-110 transition-transform">
+                      <Video className="w-6 h-6" />
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full bg-rose-50 dark:bg-rose-950 text-rose-700 dark:text-rose-300 font-mono text-[10px] font-bold border border-rose-200 dark:border-rose-800">
+                      AI Video
+                    </span>
+                  </div>
+                  <h4 className="text-base font-bold text-slate-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors tracking-tight">
+                    Video Walkthrough
+                  </h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                    Automated 6-chapter video presentation with synchronized voiceover explaining tech stack, architecture, security, and setup.
+                  </p>
+                </div>
+                <div className="mt-6 pt-4 border-t border-surface-750 flex items-center justify-between text-xs font-bold text-rose-600 dark:text-rose-400">
+                  <span>Watch Video</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </button>
+
               {/* Feature 1: Architecture Blueprint */}
               <button
                 onClick={() => navigate('/architecture')}

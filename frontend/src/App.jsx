@@ -6,6 +6,7 @@ import Topbar from './components/Topbar';
 import Dashboard from './pages/Dashboard';
 import ArchitecturePage from './pages/ArchitecturePage';
 import DoctorCheckupPage from './pages/DoctorCheckupPage';
+import VideoWalkthroughPage from './pages/VideoWalkthroughPage';
 import AnalyzerPage from './pages/AnalyzerPage';
 import AskCodebasePage from './pages/AskCodebasePage';
 import HistoryPage from './pages/HistoryPage';
@@ -33,6 +34,11 @@ function AppLayout() {
         return {
           title: 'Smart Bug & Security Audit — Doctor Checkup',
           desc: 'Deterministic OWASP vulnerability scanning + AI review with reviewable code diff patches.'
+        };
+      case '/video':
+        return {
+          title: 'AI Video Walkthrough — Repository Explainer',
+          desc: 'Automated 6-chapter video presentation with voice narration, architecture slides, and developer setup.'
         };
       case '/analyzer':
         return {
@@ -96,6 +102,7 @@ function AppLayout() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/architecture" element={<ArchitecturePage />} />
             <Route path="/audit" element={<DoctorCheckupPage />} />
+            <Route path="/video" element={<VideoWalkthroughPage />} />
             <Route path="/analyzer" element={<AnalyzerPage />} />
             <Route path="/ask" element={<AskCodebasePage />} />
             <Route path="/history" element={<HistoryPage />} />
@@ -107,7 +114,7 @@ function AppLayout() {
         <CodebaseChatDrawer />
 
         <footer className="py-4 px-8 border-t border-surface-750 bg-surface-900 text-center text-xs text-slate-500 font-medium">
-          DevLens AI — AI-Powered GitHub Repository Analyzer • Architecture X-Ray • Doctor Checkup • Instant Onboarding
+          DevLens AI — AI-Powered GitHub Repository Analyzer • Architecture X-Ray • Doctor Checkup • AI Video Explainer
         </footer>
       </div>
     </div>

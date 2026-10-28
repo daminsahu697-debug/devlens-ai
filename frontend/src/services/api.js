@@ -154,6 +154,18 @@ export async function sendCodebaseChat(repoUrl, question, history, sessionKeys) 
 }
 
 /**
+ * Fetches AI Video Walkthrough Presentation and Narration Script.
+ */
+export async function fetchVideoScript(repoUrl, sessionKeys) {
+  const response = await fetch(`${API_BASE}/repository/video/script`, {
+    method: 'POST',
+    headers: buildHeaders(sessionKeys),
+    body: JSON.stringify({ repoUrl })
+  });
+  return handleResponse(response);
+}
+
+/**
  * Retrieves backend system configuration status.
  */
 export async function getSystemStatus(sessionKeys) {
@@ -163,4 +175,5 @@ export async function getSystemStatus(sessionKeys) {
   });
   return handleResponse(response);
 }
+
 

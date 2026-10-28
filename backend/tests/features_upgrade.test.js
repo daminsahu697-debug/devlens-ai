@@ -125,3 +125,30 @@ describe('Feature 3: Instant Onboarding & Grounded Chat', () => {
     assert.strictEqual(body.error.code, 'INVALID_QUESTION');
   });
 });
+
+describe('Feature: AI Video Walkthrough & Presentation', () => {
+  test('POST /api/repository/video/script - Rejects missing parameters (400)', async () => {
+    const res = await fetch(`${baseUrl}/api/repository/video/script`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({})
+    });
+    assert.strictEqual(res.status, 400);
+    const body = await res.json();
+    assert.strictEqual(body.success, false);
+    assert.strictEqual(body.error.code, 'MISSING_PARAMS');
+  });
+
+  test('POST /api/repository/video/script - Rejects non-GitHub SSRF URL (400)', async () => {
+    const res = await fetch(`${baseUrl}/api/repository/video/script`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ repoUrl: 'https://malicious-site.com/exploit/repo' })
+    });
+    assert.strictEqual(res.status, 400);
+    const body = await res.json();
+    assert.strictEqual(body.success, false);
+    assert.strictEqual(body.error.code, 'INVALID_URL');
+  });
+});
+

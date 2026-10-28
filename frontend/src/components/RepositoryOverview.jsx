@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Star,
   GitFork,
@@ -12,12 +13,14 @@ import {
   Shield,
   Clock,
   Layers,
-  Sparkles
+  Sparkles,
+  Video
 } from 'lucide-react';
 import MetricCard from './MetricCard';
 import LanguageChart from './LanguageChart';
 
 export default function RepositoryOverview({ metadata, stats, languageBreakdown }) {
+  const navigate = useNavigate();
   if (!metadata) return null;
 
   return (
@@ -59,7 +62,15 @@ export default function RepositoryOverview({ metadata, stats, languageBreakdown 
             </div>
           </div>
 
-          <div className="flex items-center gap-2 self-stretch md:self-auto shrink-0">
+          <div className="flex items-center gap-3 self-stretch md:self-auto shrink-0 flex-wrap">
+            <button
+              onClick={() => navigate('/video')}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold text-white bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 shadow-md shadow-rose-500/20 hover:scale-105 active:scale-95 transition-all"
+            >
+              <Video className="w-4 h-4 text-white" />
+              <span>Watch AI Video</span>
+            </button>
+
             <a
               href={metadata.htmlUrl}
               target="_blank"
