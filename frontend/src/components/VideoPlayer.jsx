@@ -169,41 +169,47 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
   // 3. Speech Narration Engine
   const speakChapter = useCallback((chapterIndex) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
 
-    const chapter = chapters[chapterIndex];
-    if (!chapter || !chapter.narration) return;
-
-    if (isMuted) return;
-
-    const utterance = new SpeechSynthesisUtterance(chapter.narration);
-    utterance.rate = playbackSpeed;
-    utterance.pitch = 1.0;
-
-    if (selectedVoiceName && availableVoices.length > 0) {
-      const voice = availableVoices.find(v => v.name === selectedVoiceName);
-      if (voice) utterance.voice = voice;
+    try {
+      window.speechSynthesis.cancel();
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+    } catch {
+      // ignore
     }
 
-    utterance.onend = () => {
-      // Auto advance to next chapter if still playing
-      if (chapterIndex < chapters.length - 1) {
-        setCurrentChapterIdx(prev => prev + 1);
-        setChapterProgress(0);
-      } else {
-        setIsPlaying(false);
-        setChapterProgress(1);
-      }
-    };
+    const chapter = chapters[chapterIndex];
+    if (!chapter || !chapter.narration || isMuted) return;
 
-    utterance.onerror = (e) => {
-      if (e.error !== 'canceled' && e.error !== 'interrupted') {
-        console.error('Speech synthesis error:', e);
-      }
-    };
+    try {
+      const utterance = new SpeechSynthesisUtterance(chapter.narration);
+      utterance.rate = playbackSpeed;
+      utterance.pitch = 1.0;
 
-    speechUtteranceRef.current = utterance;
-    window.speechSynthesis.speak(utterance);
+      if (selectedVoiceName && availableVoices.length > 0) {
+        const voice = availableVoices.find(v => v.name === selectedVoiceName);
+        if (voice) utterance.voice = voice;
+      }
+
+      utterance.onend = () => {
+        // When speech finishes, fast-forward progress so slide transitions cleanly
+        setChapterProgress(prev => Math.max(prev, 0.99));
+      };
+
+      utterance.onerror = (e) => {
+        if (e.error !== 'canceled' && e.error !== 'interrupted') {
+          console.warn('Speech synthesis warning:', e);
+        }
+      };
+
+      // Retain utterance in window to prevent Chrome V8 garbage collection mid-speech
+      window.__devlens_utterance = utterance;
+      speechUtteranceRef.current = utterance;
+      window.speechSynthesis.speak(utterance);
+    } catch (err) {
+      console.warn('Speech synthesis speak error:', err);
+    }
   }, [chapters, isMuted, playbackSpeed, selectedVoiceName, availableVoices]);
 
   // Handle play / pause toggle
@@ -215,9 +221,18 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
       }
       stopAmbientSynth();
     } else {
+      initAudio();
+      const ctx = audioContextRef.current;
+      if (ctx && ctx.state === 'suspended') {
+        ctx.resume();
+      }
+      // If reached the end of the presentation, rewind to start
+      if (currentChapterIdx >= chapters.length - 1 && chapterProgress >= 1) {
+        setCurrentChapterIdx(0);
+        setChapterProgress(0);
+      }
       setIsPlaying(true);
       startAmbientSynth();
-      speakChapter(currentChapterIdx);
     }
   };
 
@@ -227,10 +242,6 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
     setCurrentChapterIdx(idx);
     setChapterProgress(0);
     if (onChapterChange) onChapterChange(idx);
-
-    if (isPlaying) {
-      speakChapter(idx);
-    }
   };
 
   // Next / Prev chapter
@@ -249,21 +260,67 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
     }
   };
 
-  // Update progress timer loop while playing
+  // Synchronize chapter change with speech narration
   useEffect(() => {
-    let interval;
-    if (isPlaying && currentChapter) {
-      const duration = currentChapter.durationSeconds || 30;
-      const stepMs = 100;
-      interval = setInterval(() => {
-        setChapterProgress(prev => {
-          const next = prev + (stepMs / (duration * 1000)) * playbackSpeed;
-          return next >= 1 ? 1 : next;
-        });
-      }, stepMs);
+    if (isPlaying) {
+      speakChapter(currentChapterIdx);
+    } else {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
     }
+  }, [currentChapterIdx, isPlaying, speakChapter]);
+
+  // Chrome SpeechSynthesis anti-freeze watchdog
+  useEffect(() => {
+    if (!isPlaying) return;
+    const watchdog = setInterval(() => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        if (window.speechSynthesis.speaking && window.speechSynthesis.paused) {
+          window.speechSynthesis.resume();
+        }
+      }
+    }, 2500);
+    return () => clearInterval(watchdog);
+  }, [isPlaying]);
+
+  // Chapter progress timer loop (decoupled from speech so it never freezes)
+  useEffect(() => {
+    if (!isPlaying || !currentChapter) return;
+    const duration = (currentChapter.durationSeconds || 30) / playbackSpeed;
+    const stepMs = 100;
+    const increment = stepMs / (duration * 1000);
+
+    const interval = setInterval(() => {
+      setChapterProgress(prev => {
+        const next = prev + increment;
+        if (next >= 1) return 1;
+        return next;
+      });
+    }, stepMs);
+
     return () => clearInterval(interval);
   }, [isPlaying, currentChapter, playbackSpeed]);
+
+  // Auto-advance chapter when chapterProgress hits 1
+  useEffect(() => {
+    if (!isPlaying) return;
+    if (chapterProgress >= 1) {
+      const timer = setTimeout(() => {
+        if (currentChapterIdx < chapters.length - 1) {
+          setCurrentChapterIdx(prev => prev + 1);
+          setChapterProgress(0);
+          if (onChapterChange) onChapterChange(currentChapterIdx + 1);
+        } else {
+          // Finished all 6 chapters!
+          setIsPlaying(false);
+          setChapterProgress(1);
+          stopAmbientSynth();
+        }
+      }, 350);
+      return () => clearTimeout(timer);
+    }
+  }, [chapterProgress, isPlaying, currentChapterIdx, chapters.length, onChapterChange]);
 
   // Volume & Mute handling
   useEffect(() => {
@@ -382,17 +439,63 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
   return (
     <div
       ref={playerContainerRef}
-      className={`cinema-stage relative w-full rounded-3xl overflow-hidden shadow-2xl border border-slate-800 bg-[#070b14] text-white flex flex-col ${
-        isFullscreen ? 'h-screen rounded-none' : 'aspect-video min-h-[440px]'
+      className={`cinema-stage relative w-full max-w-5xl mx-auto rounded-3xl overflow-hidden shadow-2xl border border-slate-800 bg-[#070b14] text-white flex flex-col ${
+        isFullscreen ? 'h-screen rounded-none' : 'aspect-video max-h-[500px] min-h-[380px]'
       }`}
     >
       {/* Visual Presentation Screen */}
-      <div className="relative flex-1 w-full h-full overflow-hidden flex flex-col justify-between p-6 md:p-10 select-none bg-gradient-to-b from-[#090e1c] via-[#070b14] to-[#050810]">
+      <div
+        onClick={togglePlay}
+        className="relative flex-1 w-full h-full overflow-hidden flex flex-col justify-between p-4 md:p-6 select-none bg-gradient-to-b from-[#090e1c] via-[#070b14] to-[#050810] cursor-pointer group"
+      >
         {/* Animated Background Gradients based on theme */}
         <div className="absolute inset-0 pointer-events-none opacity-40">
           <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-gradient-to-br from-sky-500/25 to-indigo-500/15 blur-3xl animate-pulse" />
           <div className="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-gradient-to-tl from-violet-500/25 to-rose-500/15 blur-3xl animate-pulse" />
         </div>
+
+        {/* Center Big Play Button Overlay when !isPlaying */}
+        {!isPlaying && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              togglePlay();
+            }}
+            className="absolute inset-0 z-30 flex flex-col items-center justify-center bg-black/60 backdrop-blur-[2px] cursor-pointer group/btn transition-all"
+          >
+            <div className="relative flex items-center justify-center">
+              {/* Glowing pulsating halo */}
+              <div className="absolute w-24 h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-tr from-sky-500/50 via-indigo-500/50 to-rose-500/50 blur-xl animate-pulse" />
+              <button
+                type="button"
+                className="relative w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-tr from-sky-500 via-indigo-600 to-rose-500 text-white flex items-center justify-center shadow-2xl shadow-sky-500/50 group-hover/btn:scale-110 active:scale-95 transition-transform duration-200 border-2 border-white/80"
+              >
+                <Play className="w-8 h-8 md:w-9 md:h-9 fill-white text-white ml-1 drop-shadow" />
+              </button>
+            </div>
+            <div className="mt-4 text-center px-4">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/25 border border-sky-400/40 text-sky-200 font-mono text-[11px] font-bold uppercase tracking-wider mb-2">
+                <Sparkles className="w-3.5 h-3.5 text-sky-300" />
+                {chapterProgress > 0 ? 'Video Paused' : 'Interactive AI Video Player'}
+              </span>
+              <h3 className="text-base md:text-xl font-extrabold text-white tracking-tight drop-shadow-md">
+                {chapterProgress > 0 ? 'Click to Resume Presentation' : 'Click to Play AI Video Walkthrough'}
+              </h3>
+              <p className="text-xs text-slate-300 mt-1 max-w-sm mx-auto font-medium">
+                Chapter {currentChapterIdx + 1} of {chapters.length}: {currentChapter?.title}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Hover Pause Indicator when isPlaying */}
+        {isPlaying && (
+          <div className="absolute top-4 right-28 z-20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            <span className="px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-md text-slate-300 font-mono text-[10px] border border-white/20">
+              Click screen to pause
+            </span>
+          </div>
+        )}
 
         {/* Top Header Row of Video Screen */}
         <div className="relative z-10 flex items-center justify-between">
@@ -404,7 +507,7 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
               <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-sky-400">
                 DevLens AI • Codebase Walkthrough
               </span>
-              <h4 className="text-sm md:text-base font-extrabold text-white tracking-tight">
+              <h4 className="text-sm md:text-base font-extrabold text-white tracking-tight truncate max-w-md">
                 {presentation?.repository?.fullName || 'Repository Walkthrough'}
               </h4>
             </div>
@@ -424,18 +527,18 @@ export default function VideoPlayer({ presentation, onChapterChange }) {
         </div>
 
         {/* Center Dynamic Visual Slide */}
-        <div className="relative z-10 my-auto py-4">
+        <div className="relative z-10 my-auto py-2">
           {currentChapter && (
             <div className="transition-all duration-300">
               {/* Slide Headline */}
-              <div className="text-center md:text-left mb-6">
-                <span className="text-xs font-mono font-bold text-sky-400 uppercase tracking-widest">
+              <div className="text-center md:text-left mb-3">
+                <span className="text-[11px] font-mono font-bold text-sky-400 uppercase tracking-widest">
                   {currentChapter.subtitle}
                 </span>
-                <h3 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight mt-1 drop-shadow-sm">
+                <h3 className="text-xl md:text-3xl font-extrabold text-white tracking-tight mt-0.5 drop-shadow-sm">
                   {currentChapter.visual?.headline || currentChapter.title}
                 </h3>
-                <p className="text-xs md:text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed">
+                <p className="text-xs md:text-sm text-slate-300 mt-1 max-w-2xl leading-relaxed line-clamp-2">
                   {currentChapter.visual?.tagline}
                 </p>
               </div>

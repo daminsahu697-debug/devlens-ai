@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   MessageSquareCode,
   Send,
@@ -43,6 +43,7 @@ export default function CodebaseChatDrawer() {
   } = useRepository();
 
   const navigate = useNavigate();
+  const location = useLocation();
   const [inputText, setInputText] = useState('');
   const messagesEndRef = useRef(null);
 
@@ -74,6 +75,11 @@ export default function CodebaseChatDrawer() {
   };
 
   if (!isChatDrawerOpen) {
+    // Hide floating button when viewing video walkthrough to avoid blocking video controls
+    if (location.pathname === '/video') {
+      return null;
+    }
+
     // Floating Quick-Action Toggle Button
     return (
       <button
