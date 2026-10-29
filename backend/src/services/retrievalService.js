@@ -1,7 +1,8 @@
 /**
  * DevLens AI - Context Retrieval Service
  * Selects representative repository files for AI summarization and
- * performs keyword-based snippet retrieval for Q&A.
+ * performs keyword-based snippet retrieval for Q&A with semantic expansion
+ * and binary asset filtering.
  */
 
 import { fetchFileContent } from './githubService.js';
@@ -17,16 +18,94 @@ const STOP_WORDS = new Set([
   'been', 'being', 'have', 'has', 'had', 'having', 'this', 'that', 'these',
   'those', 'it', 'its', 'code', 'project', 'repo', 'repository', 'file', 'files',
   'implementation', 'implemented', 'works', 'working', 'explain', 'show', 'tell',
-  'please', 'find', 'look', 'give', 'me', 'i', 'you', 'we', 'they'
+  'please', 'find', 'look', 'give', 'me', 'i', 'you', 'we', 'they', 'here', 'there'
+]);
+
+// Non-source code / media / binary file extensions that must NOT be retrieved for code Q&A
+const NON_SOURCE_EXTENSIONS = new Set([
+  'png', 'jpg', 'jpeg', 'gif', 'svg', 'ico', 'webp', 'avif', 'bmp', 'tiff',
+  'mp4', 'webm', 'mov', 'avi', 'mp3', 'wav', 'ogg',
+  'woff', 'woff2', 'eot', 'ttf', 'otf',
+  'zip', 'tar', 'gz', '7z', 'rar', 'pdf', 'doc', 'docx', 'xls', 'xlsx',
+  'lock', 'lockb', 'map'
+]);
+
+// Semantic keyword expansion clusters to bridge user natural language to code filenames
+const SYNONYM_CLUSTERS = [
+  {
+    triggers: [
+      'auth', 'authentication', 'authenticate', 'authenticated', 'authenticating',
+      'login', 'signin', 'sign-in', 'signup', 'sign-up', 'register', 'registration',
+      'session', 'sessions', 'user', 'users', 'account', 'accounts',
+      'credential', 'credentials', 'password', 'passwords', 'token', 'tokens',
+      'jwt', 'oauth', 'role', 'roles', 'permission', 'permissions', 'nextauth', 'passport'
+    ],
+    coreTokens: ['auth', 'session', 'login', 'nextauth', 'jwt', 'credentials', 'oauth', 'token']
+  },
+  {
+    triggers: [
+      'db', 'database', 'databases', 'prisma', 'postgres', 'postgresql', 'mysql',
+      'mongo', 'mongodb', 'mongoose', 'sqlite', 'redis', 'model', 'models',
+      'schema', 'schemas', 'entity', 'entities', 'table', 'tables', 'migration',
+      'migrations', 'query', 'queries', 'orm', 'store', 'storage'
+    ],
+    coreTokens: ['prisma', 'schema', 'db', 'database', 'model', 'entity', 'sql', 'migration']
+  },
+  {
+    triggers: [
+      'api', 'apis', 'route', 'routes', 'routing', 'endpoint', 'endpoints',
+      'controller', 'controllers', 'handler', 'handlers', 'rest', 'graphql',
+      'trpc', 'webhook', 'webhooks', 'request', 'response'
+    ],
+    coreTokens: ['route', 'api', 'controller', 'handler', 'endpoint']
+  },
+  {
+    triggers: [
+      'state', 'store', 'stores', 'redux', 'zustand', 'context', 'recoil',
+      'mobx', 'reducer', 'reducers', 'slice', 'slices', 'action', 'actions'
+    ],
+    coreTokens: ['store', 'context', 'state', 'slice', 'reducer']
+  },
+  {
+    triggers: [
+      'payment', 'payments', 'pay', 'checkout', 'stripe', 'razorpay',
+      'paypal', 'cart', 'order', 'orders', 'billing', 'invoice', 'invoices',
+      'price', 'pricing'
+    ],
+    coreTokens: ['payment', 'checkout', 'stripe', 'razorpay', 'order', 'cart']
+  },
+  {
+    triggers: [
+      'ui', 'component', 'components', 'page', 'pages', 'view', 'views',
+      'layout', 'layouts', 'style', 'styles', 'css', 'tailwind', 'theme', 'themes'
+    ],
+    coreTokens: ['component', 'page', 'layout', 'ui', 'view', 'theme']
+  },
+  {
+    triggers: [
+      'test', 'tests', 'testing', 'spec', 'specs', 'jest', 'vitest', 'mocha',
+      'cypress', 'playwright', 'unit', 'e2e'
+    ],
+    coreTokens: ['test', 'spec', 'jest', 'vitest']
+  },
+  {
+    triggers: [
+      'config', 'configuration', 'env', 'environment', 'variable', 'variables',
+      'secret', 'secrets', 'docker', 'dockerfile', 'build', 'vite', 'webpack'
+    ],
+    coreTokens: ['config', 'env', 'package.json', 'docker']
+  }
+];
+
+// High-specificity domain tokens that receive amplified relevance score
+const HIGH_SPECIFICITY_TOKENS = new Set([
+  'auth', 'authentication', 'session', 'nextauth', 'jwt', 'oauth', 'credentials',
+  'prisma', 'database', 'postgres', 'mysql', 'mongo', 'mongoose', 'schema',
+  'stripe', 'razorpay', 'docker', 'redis'
 ]);
 
 /**
  * Discovers and collects key contextual files for generating an accurate AI project summary.
- * Retrieves:
- * 1. README (if exists)
- * 2. Dependency / build manifest (e.g. package.json, go.mod, Cargo.toml, pyproject.toml)
- * 3. Primary application entry point (e.g. index.js, main.py, src/main.rs)
- * Caps file lengths to prevent token exhaustion.
  */
 export async function getSummaryContext(owner, repo, defaultBranch, allFilesList, token) {
   const contextFiles = [];
@@ -100,20 +179,34 @@ export async function getSummaryContext(owner, repo, defaultBranch, allFilesList
 }
 
 /**
- * Extracts searchable keywords from a user question.
+ * Extracts searchable keywords from a user question with synonym cluster expansion.
  */
 export function extractKeywords(question) {
-  return question
+  const rawWords = question
     .toLowerCase()
     .replace(/[^a-z0-9_\-\s]/g, ' ')
     .split(/\s+/)
     .filter(word => word.length >= 2 && !STOP_WORDS.has(word));
+
+  const expandedSet = new Set(rawWords);
+
+  // Expand with synonym clusters
+  for (const cluster of SYNONYM_CLUSTERS) {
+    const isTriggered = rawWords.some(w =>
+      cluster.triggers.includes(w) ||
+      cluster.triggers.some(t => (w.length >= 4 && t.includes(w)) || (t.length >= 4 && w.includes(t)))
+    );
+
+    if (isTriggered) {
+      cluster.coreTokens.forEach(token => expandedSet.add(token));
+    }
+  }
+
+  return Array.from(expandedSet);
 }
 
 /**
- * Keyword-based retrieval for Q&A.
- * Scores all known files by name/path match and content keywords,
- * extracts targeted snippets with start/end line numbers.
+ * Keyword-based retrieval for Q&A with semantic ranking and exact snippet extraction.
  */
 export async function retrieveRelevantSnippets(owner, repo, defaultBranch, allFilesList, question, token) {
   const keywords = extractKeywords(question);
@@ -121,50 +214,65 @@ export async function retrieveRelevantSnippets(owner, repo, defaultBranch, allFi
     return { snippets: [], searchedFilesCount: 0, keywordsUsed: [] };
   }
 
-  // Score files by path relevance
-  const scoredFiles = allFilesList.map(filePath => {
+  // 1. Filter out non-source code and media files
+  const candidateFiles = allFilesList.filter(filePath => {
+    const ext = (filePath.split('.').pop() || '').toLowerCase();
+    return !NON_SOURCE_EXTENSIONS.has(ext);
+  });
+
+  // 2. Score candidate files
+  const scoredFiles = candidateFiles.map(filePath => {
     let score = 0;
     const lower = filePath.toLowerCase();
     const parts = lower.split('/');
     const fileName = parts[parts.length - 1];
+    const baseName = fileName.includes('.') ? fileName.slice(0, fileName.lastIndexOf('.')) : fileName;
 
     for (const kw of keywords) {
-      if (fileName.includes(kw)) score += 5;
-      if (lower.includes(kw)) score += 2;
+      const isSpecific = HIGH_SPECIFICITY_TOKENS.has(kw);
+      const mult = isSpecific ? 2.5 : 1;
+
+      if (baseName === kw) {
+        score += 25 * mult;
+      } else if (fileName.includes(kw)) {
+        score += 15 * mult;
+      } else if (lower.includes(kw)) {
+        score += 8 * mult;
+      }
     }
 
-    // Boost common high-value architectural files
-    if (lower.includes('readme')) score += 3;
-    if (lower.includes('config') || lower.includes('manifest')) score += 1;
-    if (lower.includes('route') || lower.includes('controller') || lower.includes('api')) score += 2;
-    if (lower.includes('auth') || lower.includes('model') || lower.includes('service')) score += 2;
+    // Boost API routes if question relates to APIs or routes
+    if ((lower.startsWith('src/app/api/') || lower.startsWith('src/api/') || lower.includes('/routes/')) && score > 0) {
+      score += 4;
+    }
 
     return { filePath, score };
   });
 
-  // Filter to files with score > 0, sorted descending
-  const topCandidates = scoredFiles
+  // 3. Take top candidates with positive score
+  let topCandidates = scoredFiles
     .filter(item => item.score > 0)
     .sort((a, b) => b.score - a.score)
-    .slice(0, 5)
+    .slice(0, 8)
     .map(item => item.filePath);
 
   // If no candidates matched keywords, fall back to README and entry point
   if (topCandidates.length === 0) {
-    const readme = allFilesList.find(f => f.toLowerCase().includes('readme'));
+    const readme = candidateFiles.find(f => f.toLowerCase().includes('readme'));
     if (readme) topCandidates.push(readme);
-    const entry = allFilesList.find(f => /index|main|app/i.test(f));
+    const entry = candidateFiles.find(f => /index|main|app/i.test(f));
     if (entry && !topCandidates.includes(entry)) topCandidates.push(entry);
   }
 
   const snippets = [];
 
-  for (const filePath of topCandidates.slice(0, 4)) {
+  // 4. Fetch up to 6 candidate files and extract targeted excerpts
+  for (const filePath of topCandidates.slice(0, 6)) {
     try {
       const fileData = await fetchFileContent(owner, repo, filePath, defaultBranch, token);
       const lines = fileData.content.split('\n');
 
-      // Search for keyword matches in content
+      // Search for keyword matches in file content
       const matchingLineIndices = [];
       lines.forEach((line, idx) => {
         const lineLower = line.toLowerCase();
@@ -189,18 +297,18 @@ export async function retrieveRelevantSnippets(owner, repo, defaultBranch, allFi
             lineStart: startLine + 1,
             lineEnd: endLine + 1,
             snippet: snippetLines.join('\n'),
-            reason: `Matches terms "${keywords.join(', ')}" in ${filePath}`
+            reason: `Matches key terms in ${filePath}`
           });
         }
       } else {
-        // If file was selected by path match but no direct content line matched, take the head of file
-        const headLines = lines.slice(0, Math.min(lines.length, 30));
+        // If file was selected by strong name match (e.g. auth.ts or route.ts), take the primary code body (up to 40 lines)
+        const headLines = lines.slice(0, Math.min(lines.length, 40));
         snippets.push({
           file: filePath,
           lineStart: 1,
           lineEnd: headLines.length,
           snippet: headLines.join('\n'),
-          reason: `Relevant architectural file identified from path match (${filePath})`
+          reason: `High-relevance source module matching query (${filePath})`
         });
       }
     } catch {
@@ -209,7 +317,7 @@ export async function retrieveRelevantSnippets(owner, repo, defaultBranch, allFi
   }
 
   return {
-    snippets: snippets.slice(0, 5),
+    snippets: snippets.slice(0, 6),
     searchedFilesCount: topCandidates.length,
     keywordsUsed: keywords
   };

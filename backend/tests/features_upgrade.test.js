@@ -124,6 +124,16 @@ describe('Feature 3: Instant Onboarding & Grounded Chat', () => {
     assert.strictEqual(body.success, false);
     assert.strictEqual(body.error.code, 'INVALID_QUESTION');
   });
+
+  test('extractKeywords expands authentication to auth and session clusters while ignoring stopwords', async () => {
+    const { extractKeywords } = await import('../src/services/retrievalService.js');
+    const keywords = extractKeywords('Where is user authentication or session handling implemented?');
+    assert.ok(keywords.includes('auth'), 'Must expand to auth');
+    assert.ok(keywords.includes('session'), 'Must include session');
+    assert.ok(keywords.includes('nextauth'), 'Must include nextauth');
+    assert.ok(!keywords.includes('where'), 'Must ignore stopword where');
+    assert.ok(!keywords.includes('is'), 'Must ignore stopword is');
+  });
 });
 
 describe('Feature: AI Video Walkthrough & Presentation', () => {
